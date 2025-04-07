@@ -16,5 +16,10 @@
   "bugs": {
     "url": "https://github.com/Peter-Pander/mern-crash-course/issues"
   },
-  "homepage": "https://github.com/Peter-Pander/mern-crash-course#readme"
+  "homepage": "https://github.com/Peter-Pander/mern-crash-course#readme",
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^5.1.0",
+    "mongoose": "^8.13.2"
+  }
 }
