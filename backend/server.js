@@ -10,7 +10,7 @@ const app = express();
 
 app.use(express.json()); // Allows us to accept JSON data in the req.body
 
-ape.use("/api/products", productRoutes);
+app.use("/api/products", productRoutes);
 
 app.listen(5000, () => {
   connectDB(); // Make sure this connects to MongoDB
