@@ -14,13 +14,11 @@ export const useProductStore = create((set) => ({
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify(newProduct)
+      body: JSON.stringify(newProduct),
     });
 
     const data = await res.json();
-
-    set((state) => ({
-      products: [...state.products, data]
-    }));
-  }
+    set((state) => ({ products: [...state.products, data.data] }));
+    return { success: true, message: "Product created successfully" };
+  },
 }));
