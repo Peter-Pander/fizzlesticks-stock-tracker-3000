@@ -27,7 +27,7 @@ const ProductCard = ({ product }) => {
   const textColor = useColorModeValue("gray.600", "gray.200");
   const bg = useColorModeValue("white", "gray.800");
 
-  const { deleteProduct } = useProductStore();
+  const { deleteProduct, updateProduct } = useProductStore();
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -35,7 +35,6 @@ const ProductCard = ({ product }) => {
 
   const handleDeleteProduct = async (pid) => {
     const { success, message } = await deleteProduct(pid);
-
     toast({
       title: success ? 'Success' : 'Error',
       description: message,
@@ -43,6 +42,27 @@ const ProductCard = ({ product }) => {
       duration: 3000,
       isClosable: true,
     });
+  };
+
+  const handleUpdateProduct = async () => {
+    const { success, message } = await updateProduct(product._id, updatedProduct);
+    toast({
+      title: success ? 'Success' : 'Error',
+      description: message,
+      status: success ? 'success' : 'error',
+      duration: 3000,
+      isClosable: true,
+    });
+
+    if (success) onClose();
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setUpdatedProduct((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   return (
@@ -92,22 +112,25 @@ const ProductCard = ({ product }) => {
                 placeholder='Product Name'
                 name='name'
                 value={updatedProduct.name}
+                onChange={handleInputChange}
               />
               <Input
                 placeholder='Price'
                 name='price'
                 type='number'
                 value={updatedProduct.price}
+                onChange={handleInputChange}
               />
               <Input
                 placeholder='Image URL'
                 name='image'
                 value={updatedProduct.image}
+                onChange={handleInputChange}
               />
             </VStack>
           </ModalBody>
           <ModalFooter>
-            <Button colorScheme='blue' mr={3}>
+            <Button colorScheme='blue' mr={3} onClick={handleUpdateProduct}>
               Update
             </Button>
             <Button variant='ghost' onClick={onClose}>
