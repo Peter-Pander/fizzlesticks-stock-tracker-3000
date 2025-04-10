@@ -46,15 +46,25 @@ const ProductCard = ({ product }) => {
 
   const handleUpdateProduct = async () => {
     const { success, message } = await updateProduct(product._id, updatedProduct);
-    toast({
-      title: success ? 'Success' : 'Error',
-      description: message,
-      status: success ? 'success' : 'error',
-      duration: 3000,
-      isClosable: true,
-    });
+    onClose();
 
-    if (success) onClose();
+    if (!success) {
+      toast({
+        title: "Error",
+        description: message,
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    } else {
+      toast({
+        title: "Success",
+        description: "Product updated successfully",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
   };
 
   const handleInputChange = (e) => {
