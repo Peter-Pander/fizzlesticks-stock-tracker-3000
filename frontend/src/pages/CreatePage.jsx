@@ -1,4 +1,13 @@
-import { Box, Button, Container, Heading, Input, useColorModeValue, useToast, VStack } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Container,
+  Heading,
+  Input,
+  useColorModeValue,
+  useToast,
+  VStack,
+} from "@chakra-ui/react";
 import { useState } from "react";
 import { useProductStore } from "../store/product";
 
@@ -7,29 +16,28 @@ const CreatePage = () => {
     name: "",
     price: "",
     image: "",
-    quantity: 0, // <-- added quantity field
+    quantity: "",
   });
+
   const toast = useToast();
   const { createProduct } = useProductStore();
 
   const handleAddProduct = async () => {
-    const { success, message } = await createProduct(newProduct);
-    if (!success) {
-      toast({
-        title: "Error",
-        description: message,
-        status: "error",
-        isClosable: true,
-      });
-    } else {
-      toast({
-        title: "Success",
-        description: message,
-        status: "success",
-        isClosable: true,
-      });
-    }
-    // Reset form including quantity
+    const preparedProduct = {
+      ...newProduct,
+      price: parseFloat(newProduct.price),
+      quantity: parseInt(newProduct.quantity, 10),
+    };
+
+    const { success, message } = await createProduct(preparedProduct);
+
+    toast({
+      title: success ? "Success" : "Error",
+      description: message,
+      status: success ? "success" : "error",
+      isClosable: true,
+    });
+
     setNewProduct({
       name: "",
       price: "",
@@ -78,7 +86,7 @@ const CreatePage = () => {
               min="0"
               value={newProduct.quantity}
               onChange={(e) =>
-                setNewProduct({ ...newProduct, quantity: parseInt(e.target.value, 10) || 0 })
+                setNewProduct({ ...newProduct, quantity: e.target.value })
               }
             />
             <Button colorScheme="blue" onClick={handleAddProduct} w="full">
