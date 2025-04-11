@@ -31,6 +31,7 @@ const ProductCard = ({ product }) => {
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
+  // Initialize updatedProduct from product (includes quantity)
   const [updatedProduct, setUpdatedProduct] = useState(product);
 
   const handleDeleteProduct = async (pid) => {
@@ -47,7 +48,6 @@ const ProductCard = ({ product }) => {
   const handleUpdateProduct = async () => {
     const { success, message } = await updateProduct(product._id, updatedProduct);
     onClose();
-
     if (!success) {
       toast({
         title: "Error",
@@ -71,7 +71,7 @@ const ProductCard = ({ product }) => {
     const { name, value } = e.target;
     setUpdatedProduct((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: name === "quantity" ? parseInt(value, 10) : value,
     }));
   };
 
@@ -97,8 +97,13 @@ const ProductCard = ({ product }) => {
           {product.name}
         </Heading>
 
-        <Text fontWeight='bold' fontSize='xl' color={textColor} mb={4}>
+        <Text fontWeight='bold' fontSize='xl' color={textColor} mb={2}>
           {product.price} gold
+        </Text>
+
+        {/* Display the quantity */}
+        <Text fontSize='md' color={textColor} mb={4}>
+          In Stock: {product.quantity}
         </Text>
 
         <HStack spacing={2}>
@@ -111,6 +116,7 @@ const ProductCard = ({ product }) => {
         </HStack>
       </Box>
 
+      {/* Update Modal */}
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
@@ -135,6 +141,15 @@ const ProductCard = ({ product }) => {
                 placeholder='Image URL'
                 name='image'
                 value={updatedProduct.image}
+                onChange={handleInputChange}
+              />
+              {/* New Quantity Input */}
+              <Input
+                placeholder='Quantity'
+                name='quantity'
+                type='number'
+                min="0"
+                value={updatedProduct.quantity}
                 onChange={handleInputChange}
               />
             </VStack>
