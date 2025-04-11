@@ -23,7 +23,7 @@ const HomePage = () => {
           bgClip={"text"}
           textAlign={"center"}
         >
-          Current Products 🚀
+          Inventory
         </Text>
 
         <SimpleGrid
