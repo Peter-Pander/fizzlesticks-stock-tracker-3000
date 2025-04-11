@@ -20,7 +20,7 @@ export const getProducts = async (req, res) => {
 export const createProduct = async (req, res) => {
   const product = req.body; // user will send this data
 
-  if (!product.name || !product.price || !product.image) {
+  if (!product.name || !product.price || !product.image || product.quantity == null) {
     return res.status(400).json({
       success: false,
       message: "Please provide all fields"
@@ -46,7 +46,6 @@ export const createProduct = async (req, res) => {
 
 export const updateProduct = async (req, res) => {
   const { id } = req.params;
-
   const product = req.body;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
