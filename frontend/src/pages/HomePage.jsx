@@ -1,24 +1,36 @@
-// src/pages/HomePage.jsx
-import { Container, SimpleGrid, Text, VStack } from '@chakra-ui/react';
-import { useEffect } from 'react';
+import { Container, SimpleGrid, Text, VStack, Checkbox, Stack, Select } from '@chakra-ui/react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useProductStore } from '../store/product';
 import ProductCard from '../components/ProductCard';
 import LowStockNotifications from '../components/LowStockNotifications';
 
 const HomePage = () => {
-  const { fetchProducts, products } = useProductStore();
+  const { fetchProducts, products, lowStockThreshold } = useProductStore();
+  const [showLowStockOnly, setShowLowStockOnly] = useState(false);
+  const [sortOrder, setSortOrder] = useState("lowToHigh");
 
   useEffect(() => {
     fetchProducts();
   }, [fetchProducts]);
 
-  console.log("products", products);
+  // Filter by "low stock" if selected and then sort by quantity
+  const sortedFilteredProducts = products
+    .filter(product =>
+      showLowStockOnly ? product.quantity < lowStockThreshold : true
+    )
+    .sort((a, b) => {
+      if (sortOrder === "lowToHigh") {
+        return a.quantity - b.quantity;
+      }
+      // sortOrder is "highToLow"
+      return b.quantity - a.quantity;
+    });
 
   return (
     <Container maxW={"container.xl"} py={12}>
       <VStack spacing={8}>
-        {/* Group the inventory heading and low stock banner */}
+        {/* Heading and Low Stock Notifications */}
         <VStack spacing={4} w="full">
           <Text
             fontSize={"30"}
@@ -32,6 +44,25 @@ const HomePage = () => {
           <LowStockNotifications />
         </VStack>
 
+        {/* Filter and Sort Controls */}
+        <Stack direction={["column", "row"]} w="full" justify="space-between" align="center">
+          <Checkbox
+            isChecked={showLowStockOnly}
+            onChange={(e) => setShowLowStockOnly(e.target.checked)}
+          >
+            Show low stock only
+          </Checkbox>
+          <Select
+            value={sortOrder}
+            onChange={(e) => setSortOrder(e.target.value)}
+            width="auto"
+          >
+            <option value="lowToHigh">Sort by Quantity: Low → High</option>
+            <option value="highToLow">Sort by Quantity: High → Low</option>
+          </Select>
+        </Stack>
+
+        {/* Product List */}
         <SimpleGrid
           columns={{
             base: 1,
@@ -41,12 +72,12 @@ const HomePage = () => {
           spacing={10}
           w={"full"}
         >
-          {products.map((product) => (
+          {sortedFilteredProducts.map(product => (
             <ProductCard key={product._id} product={product} />
           ))}
         </SimpleGrid>
 
-        {products.length === 0 && (
+        {sortedFilteredProducts.length === 0 && (
           <Text
             fontSize="xl"
             textAlign={"center"}
