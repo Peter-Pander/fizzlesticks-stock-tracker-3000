@@ -20,6 +20,7 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import { EditIcon, DeleteIcon } from '@chakra-ui/icons';
+import { FaPlus, FaMinus } from 'react-icons/fa';
 import { useProductStore } from '../store/product';
 import { useState } from 'react';
 
@@ -29,10 +30,28 @@ const ProductCard = ({ product }) => {
 
   const { deleteProduct, updateProduct } = useProductStore();
   const toast = useToast();
-  const { isOpen, onOpen, onClose } = useDisclosure();
 
-  // Initialize updatedProduct from product (includes quantity)
+  const {
+    isOpen: isEditOpen,
+    onOpen: onEditOpen,
+    onClose: onEditClose
+  } = useDisclosure();
+
+  const {
+    isOpen: isRestockOpen,
+    onOpen: onRestockOpen,
+    onClose: onRestockClose
+  } = useDisclosure();
+
+  const {
+    isOpen: isSellOpen,
+    onOpen: onSellOpen,
+    onClose: onSellClose
+  } = useDisclosure();
+
   const [updatedProduct, setUpdatedProduct] = useState(product);
+  const [restockAmount, setRestockAmount] = useState(""); // changed from 0
+  const [sellAmount, setSellAmount] = useState("");       // changed from 0
 
   const handleDeleteProduct = async (pid) => {
     const { success, message } = await deleteProduct(pid);
@@ -47,24 +66,14 @@ const ProductCard = ({ product }) => {
 
   const handleUpdateProduct = async () => {
     const { success, message } = await updateProduct(product._id, updatedProduct);
-    onClose();
-    if (!success) {
-      toast({
-        title: "Error",
-        description: message,
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
-    } else {
-      toast({
-        title: "Success",
-        description: "Product updated successfully",
-        status: "success",
-        duration: 3000,
-        isClosable: true,
-      });
-    }
+    onEditClose();
+    toast({
+      title: success ? 'Success' : 'Error',
+      description: message,
+      status: success ? 'success' : 'error',
+      duration: 3000,
+      isClosable: true,
+    });
   };
 
   const handleInputChange = (e) => {
@@ -73,6 +82,30 @@ const ProductCard = ({ product }) => {
       ...prev,
       [name]: name === "quantity" ? parseInt(value, 10) : value,
     }));
+  };
+
+  const handleRestock = async () => {
+    const amount = parseInt(restockAmount, 10);
+    if (!isNaN(amount) && amount > 0) {
+      const newQuantity = product.quantity + amount;
+      await updateProduct(product._id, { quantity: newQuantity });
+      setRestockAmount(""); // clear after success
+      onRestockClose();
+    }
+  };
+
+  const handleSell = async () => {
+    const amount = parseInt(sellAmount, 10);
+    if (!isNaN(amount) && amount > 0) {
+      const newQuantity = product.quantity - amount;
+      if (newQuantity < 0) {
+        alert("Not enough stock to sell that many!");
+        return;
+      }
+      await updateProduct(product._id, { quantity: newQuantity });
+      setSellAmount(""); // clear after success
+      onSellClose();
+    }
   };
 
   return (
@@ -101,23 +134,42 @@ const ProductCard = ({ product }) => {
           {product.price} gold
         </Text>
 
-        {/* Display the quantity */}
         <Text fontSize='md' color={textColor} mb={4}>
           In Stock: {product.quantity}
         </Text>
 
         <HStack spacing={2}>
-          <IconButton icon={<EditIcon />} colorScheme='blue' onClick={onOpen} />
+          <IconButton
+            icon={<FaPlus />}
+            aria-label="Restock"
+            onClick={onRestockOpen}
+            colorScheme='green'
+            size='sm'
+          />
+          <IconButton
+            icon={<FaMinus />}
+            aria-label="Record Sold"
+            onClick={onSellOpen}
+            colorScheme='orange'
+            size='sm'
+          />
+          <IconButton
+            icon={<EditIcon />}
+            colorScheme='blue'
+            onClick={onEditOpen}
+            size='sm'
+          />
           <IconButton
             icon={<DeleteIcon />}
             onClick={() => handleDeleteProduct(product._id)}
             colorScheme='red'
+            size='sm'
           />
         </HStack>
       </Box>
 
-      {/* Update Modal */}
-      <Modal isOpen={isOpen} onClose={onClose}>
+      {/* Edit Modal */}
+      <Modal isOpen={isEditOpen} onClose={onEditClose}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Update Product</ModalHeader>
@@ -143,7 +195,6 @@ const ProductCard = ({ product }) => {
                 value={updatedProduct.image}
                 onChange={handleInputChange}
               />
-              {/* New Quantity Input */}
               <Input
                 placeholder='Quantity'
                 name='quantity'
@@ -158,7 +209,59 @@ const ProductCard = ({ product }) => {
             <Button colorScheme='blue' mr={3} onClick={handleUpdateProduct}>
               Update
             </Button>
-            <Button variant='ghost' onClick={onClose}>
+            <Button variant='ghost' onClick={onEditClose}>
+              Cancel
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      {/* Restock Modal */}
+      <Modal isOpen={isRestockOpen} onClose={onRestockClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>How many to restock?</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Input
+              placeholder='Amount to restock'
+              type='number'
+              min="1"
+              value={restockAmount}
+              onChange={(e) => setRestockAmount(e.target.value)}
+            />
+          </ModalBody>
+          <ModalFooter>
+            <Button colorScheme='green' mr={3} onClick={handleRestock}>
+              Restock
+            </Button>
+            <Button variant='ghost' onClick={onRestockClose}>
+              Cancel
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      {/* Sold Modal */}
+      <Modal isOpen={isSellOpen} onClose={onSellClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>How many sold?</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Input
+              placeholder='Amount sold'
+              type='number'
+              min="1"
+              value={sellAmount}
+              onChange={(e) => setSellAmount(e.target.value)}
+            />
+          </ModalBody>
+          <ModalFooter>
+            <Button colorScheme='orange' mr={3} onClick={handleSell}>
+              Sold
+            </Button>
+            <Button variant='ghost' onClick={onSellClose}>
               Cancel
             </Button>
           </ModalFooter>
