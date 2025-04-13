@@ -1,3 +1,4 @@
+// src/components/LowStockNotifications.jsx
 import React, { useState } from 'react';
 import {
   Box,
@@ -11,9 +12,13 @@ import {
 } from '@chakra-ui/react';
 import { CloseIcon } from '@chakra-ui/icons';
 import { getLowStockItems } from '../utils/utility';
+import { useProductStore } from '../store/product';
+import LowStockSettings from './LowStockSettings';
 
-const LowStockNotifications = ({ inventory, threshold = 5 }) => {
-  const lowStockItems = getLowStockItems(inventory, threshold);
+const LowStockNotifications = () => {
+  const products = useProductStore((state) => state.products);
+  const threshold = useProductStore((state) => state.lowStockThreshold);
+  const lowStockItems = getLowStockItems(products, threshold);
   const [visible, setVisible] = useState(true);
 
   if (lowStockItems.length === 0 || !visible) {
@@ -41,7 +46,7 @@ const LowStockNotifications = ({ inventory, threshold = 5 }) => {
       >
         <IconButton
           aria-label="Dismiss notification"
-          icon={<CloseIcon color={iconColor} />} // <— explicitly black
+          icon={<CloseIcon color={iconColor} />}
           size="sm"
           variant="ghost"
           position="absolute"
@@ -54,13 +59,16 @@ const LowStockNotifications = ({ inventory, threshold = 5 }) => {
         </Heading>
         <List spacing={2}>
           {lowStockItems.map((item) => (
-            <ListItem key={item.id}>
+            <ListItem key={item._id || item.id}>
               <Text>
                 {item.name} is low on stock: Only {item.quantity} left.
               </Text>
             </ListItem>
           ))}
         </List>
+        <Box mt={6}>
+          <LowStockSettings />
+        </Box>
       </Box>
     </Container>
   );

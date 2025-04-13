@@ -1,5 +1,5 @@
 // src/pages/HomePage.jsx
-import { Container, HStack, SimpleGrid, Text, VStack } from '@chakra-ui/react';
+import { Container, SimpleGrid, Text, VStack } from '@chakra-ui/react';
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useProductStore } from '../store/product';
@@ -18,7 +18,7 @@ const HomePage = () => {
   return (
     <Container maxW={"container.xl"} py={12}>
       <VStack spacing={8}>
-        {/* Group the low stock banner and inventory heading */}
+        {/* Group the inventory heading and low stock banner */}
         <VStack spacing={4} w="full">
           <Text
             fontSize={"30"}
@@ -29,7 +29,7 @@ const HomePage = () => {
           >
             Inventory
           </Text>
-          <LowStockNotifications inventory={products} threshold={5} />
+          <LowStockNotifications />
         </VStack>
 
         <SimpleGrid

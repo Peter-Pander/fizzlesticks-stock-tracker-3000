@@ -4,6 +4,10 @@ export const useProductStore = create((set) => ({
   products: [],
   setProducts: (products) => set({ products }),
 
+  // 🔔 NEW: Low stock threshold and setter
+  lowStockThreshold: 5,
+  setLowStockThreshold: (value) => set({ lowStockThreshold: value }),
+
   createProduct: async (newProduct) => {
     if (!newProduct.name || !newProduct.image || !newProduct.price) {
       return { success: false, message: "Please fill in all fields." };
