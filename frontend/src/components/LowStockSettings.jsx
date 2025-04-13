@@ -1,29 +1,29 @@
-// src/components/LowStockSettings.jsx
-import { Box, FormLabel, NumberInput, NumberInputField, HStack, IconButton } from "@chakra-ui/react";
+import {
+  Box,
+  FormLabel,
+  NumberInput,
+  NumberInputField,
+  HStack,
+  IconButton
+} from "@chakra-ui/react";
 import { CheckIcon } from "@chakra-ui/icons";
 import { useState, useEffect } from "react";
 import { useProductStore } from "../store/product";
 
 const LowStockSettings = () => {
-  // Get the global threshold and setter
   const currentThreshold = useProductStore((state) => state.lowStockThreshold);
   const setThreshold = useProductStore((state) => state.setLowStockThreshold);
-
-  // Local state to manage the input value without immediately updating the global state
   const [localValue, setLocalValue] = useState(currentThreshold);
 
-  // When the global threshold changes, update the local value as well
   useEffect(() => {
     setLocalValue(currentThreshold);
   }, [currentThreshold]);
 
-  // When the Apply button is clicked, update the global threshold if the input is valid
   const handleApply = () => {
     const parsed = parseInt(localValue, 10);
     if (!isNaN(parsed)) {
       setThreshold(parsed);
     } else {
-      // Revert to current global value if the input is invalid
       setLocalValue(currentThreshold);
     }
   };
@@ -34,21 +34,33 @@ const LowStockSettings = () => {
         <FormLabel fontWeight="bold" mb={0}>
           Low Stock Threshold
         </FormLabel>
+
         <NumberInput
           min={1}
           value={localValue}
           onChange={(valueString) => setLocalValue(valueString)}
           maxW="100px"
-          borderColor="black"
-          focusBorderColor="black"
         >
-          <NumberInputField borderColor="black" focusBorderColor="black" />
+          <NumberInputField
+            borderColor="black"
+            _hover={{ borderColor: "black" }}
+            _focus={{ borderColor: "black", boxShadow: "none" }}
+          />
         </NumberInput>
+
         <IconButton
           aria-label="Apply Threshold"
-          icon={<CheckIcon />}
+          icon={<CheckIcon color="black" />}
           size="sm"
           onClick={handleApply}
+          variant="outline"
+          border="1px"
+          borderColor="black"
+          h="38px"
+          minW="38px"
+          _hover={{ borderColor: "black", bg: "transparent" }}
+          _active={{ borderColor: "black", bg: "transparent" }}
+          _focus={{ borderColor: "black", boxShadow: "none" }}
         />
       </HStack>
     </Box>
