@@ -1,4 +1,4 @@
-import { Button, Container, Flex, HStack, Text, useColorMode } from "@chakra-ui/react";
+import { Button, Container, Flex, HStack, Text, useColorMode, Input, VStack } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 import { PlusSquareIcon } from "@chakra-ui/icons";
 import { IoMoon } from "react-icons/io5";
@@ -15,11 +15,31 @@ import {
   Select,
 } from '@chakra-ui/react';
 import { useInventorySettings } from "../context/InventorySettingsContext";
+import { useToast } from "@chakra-ui/react";
 
 const Navbar = () => {
   const { colorMode, toggleColorMode } = useColorMode();
-  // Use the shared inventory settings from the context
-  const { showLowStockOnly, setShowLowStockOnly, sortOrder, setSortOrder } = useInventorySettings();
+  const toast = useToast();
+  const {
+    showLowStockOnly,
+    setShowLowStockOnly,
+    sortOrder,
+    setSortOrder,
+    lowStockThreshold,
+    setLowStockThreshold,
+  } = useInventorySettings();
+
+  // Optional function to confirm threshold change with a toast message.
+  const confirmThresholdChange = (e) => {
+    e.stopPropagation();
+    toast({
+      title: "Threshold updated",
+      description: `Low stock threshold is now ${lowStockThreshold}`,
+      status: "success",
+      duration: 2000,
+      isClosable: true,
+    });
+  };
 
   return (
     <Container maxW={"1140px"} px={4}>
@@ -50,13 +70,13 @@ const Navbar = () => {
             {colorMode === "light" ? <IoMoon /> : <LuSun size="20" />}
           </Button>
           {/* Gear icon dropdown for inventory settings */}
-          <Menu>
+          <Menu closeOnSelect={false}>
             <MenuButton as={Button}>
               <FaCog />
             </MenuButton>
             <MenuList>
               <MenuGroup title="Inventory Settings">
-                <MenuItem>
+                <MenuItem onClick={(e) => e.stopPropagation()}>
                   <Checkbox
                     isChecked={showLowStockOnly}
                     onChange={(e) => setShowLowStockOnly(e.target.checked)}
@@ -65,7 +85,7 @@ const Navbar = () => {
                   </Checkbox>
                 </MenuItem>
                 <MenuDivider />
-                <MenuItem>
+                <MenuItem onClick={(e) => e.stopPropagation()}>
                   <Select
                     value={sortOrder}
                     onChange={(e) => setSortOrder(e.target.value)}
@@ -75,6 +95,28 @@ const Navbar = () => {
                     <option value="highToLow">Sort by Quantity: High → Low</option>
                   </Select>
                 </MenuItem>
+                <MenuDivider />
+                <MenuItem onClick={(e) => e.stopPropagation()}>
+                  <VStack spacing={2} w="full">
+                    <Text fontSize="sm">Low Stock Threshold</Text>
+                    <Input
+                      placeholder="Threshold"
+                      type="number"
+                      value={lowStockThreshold}
+                      onChange={(e) => setLowStockThreshold(e.target.value)}
+                      onClick={(e) => e.stopPropagation()}
+                      width="full"
+                    />
+                    <Button
+                      size="sm"
+                      colorScheme="blue"
+                      onClick={confirmThresholdChange}
+                      onMouseDown={(e) => e.stopPropagation()}
+                    >
+                      Confirm
+                    </Button>
+                  </VStack>
+                </MenuItem>
               </MenuGroup>
             </MenuList>
           </Menu>
@@ -83,4 +125,5 @@ const Navbar = () => {
     </Container>
   );
 };
+
 export default Navbar;

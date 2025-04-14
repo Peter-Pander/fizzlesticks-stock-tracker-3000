@@ -4,27 +4,28 @@ import { Link } from 'react-router-dom';
 import { useProductStore } from '../store/product';
 import ProductCard from '../components/ProductCard';
 import LowStockNotifications from '../components/LowStockNotifications';
-import { useInventorySettings } from "../context/InventorySettingsContext";  // Import our new context
+import { useInventorySettings } from "../context/InventorySettingsContext";  // Import our shared context
 
 const HomePage = () => {
-  const { fetchProducts, products, lowStockThreshold } = useProductStore();
-  // Use inventory settings from context instead of local state.
-  const { showLowStockOnly, sortOrder } = useInventorySettings();
+  const { fetchProducts, products } = useProductStore();
+  // Get shared inventory settings from context, including lowStockThreshold.
+  const { showLowStockOnly, sortOrder, lowStockThreshold } = useInventorySettings();
 
   useEffect(() => {
     fetchProducts();
   }, [fetchProducts]);
 
-  // Apply filters and sorting using the shared settings.
+  // Apply filtering and sorting using shared settings.
+  // Note: We convert lowStockThreshold to a number just in case it might be a string.
   const sortedFilteredProducts = products
     .filter(product =>
-      showLowStockOnly ? product.quantity < lowStockThreshold : true
+      showLowStockOnly ? product.quantity < Number(lowStockThreshold) : true
     )
     .sort((a, b) => {
       if (sortOrder === "lowToHigh") {
         return a.quantity - b.quantity;
       }
-      // sortOrder is "highToLow"
+      // Else, sortOrder is "highToLow"
       return b.quantity - a.quantity;
     });
 
@@ -44,8 +45,6 @@ const HomePage = () => {
           </Text>
           <LowStockNotifications />
         </VStack>
-
-        {/* Filter and Sort Controls removed from here (now in Navbar) */}
 
         {/* Product List */}
         <SimpleGrid
@@ -71,11 +70,7 @@ const HomePage = () => {
           >
             No products found 😢{" "}
             <Link to={"/create"}>
-              <Text
-                as="span"
-                color="blue.500"
-                _hover={{ textDecoration: "underline" }}
-              >
+              <Text as="span" color="blue.500" _hover={{ textDecoration: "underline" }}>
                 Create a product
               </Text>
             </Link>
