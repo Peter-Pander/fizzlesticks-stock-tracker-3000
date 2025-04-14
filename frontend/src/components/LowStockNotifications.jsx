@@ -1,4 +1,3 @@
-// src/components/LowStockNotifications.jsx
 import React, { useState } from 'react';
 import {
   Box,
@@ -17,10 +16,12 @@ import { useInventorySettings } from '../context/InventorySettingsContext';
 
 const LowStockNotifications = () => {
   const products = useProductStore((state) => state.products);
-  // Use the threshold from InventorySettingsContext instead of any local control.
   const { lowStockThreshold } = useInventorySettings();
   const thresholdNumber = Number(lowStockThreshold);
-  const lowStockItems = getLowStockItems(products, thresholdNumber);
+  // Get the low-stock items and sort them ascending by quantity
+  const lowStockItems = getLowStockItems(products, thresholdNumber)
+    .sort((a, b) => a.quantity - b.quantity);
+
   const [visible, setVisible] = useState(true);
 
   if (lowStockItems.length === 0 || !visible) {
