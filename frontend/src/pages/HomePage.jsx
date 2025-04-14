@@ -1,3 +1,4 @@
+// src/pages/HomePage.jsx
 import { Container, SimpleGrid, Text, VStack } from '@chakra-ui/react';
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
@@ -8,15 +9,14 @@ import { useInventorySettings } from "../context/InventorySettingsContext";  // 
 
 const HomePage = () => {
   const { fetchProducts, products } = useProductStore();
-  // Get shared inventory settings from context, including lowStockThreshold.
+  // Get shared inventory settings (including lowStockThreshold) from context.
   const { showLowStockOnly, sortOrder, lowStockThreshold } = useInventorySettings();
 
   useEffect(() => {
     fetchProducts();
   }, [fetchProducts]);
 
-  // Apply filtering and sorting using shared settings.
-  // Note: We convert lowStockThreshold to a number just in case it might be a string.
+  // Filter and sort products using the shared settings.
   const sortedFilteredProducts = products
     .filter(product =>
       showLowStockOnly ? product.quantity < Number(lowStockThreshold) : true
@@ -25,7 +25,7 @@ const HomePage = () => {
       if (sortOrder === "lowToHigh") {
         return a.quantity - b.quantity;
       }
-      // Else, sortOrder is "highToLow"
+      // sortOrder is "highToLow"
       return b.quantity - a.quantity;
     });
 
@@ -45,6 +45,8 @@ const HomePage = () => {
           </Text>
           <LowStockNotifications />
         </VStack>
+
+        {/* Filter and Sort Controls have been moved to the Navbar */}
 
         {/* Product List */}
         <SimpleGrid
