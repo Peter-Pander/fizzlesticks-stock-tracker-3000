@@ -1,10 +1,12 @@
-import { Button, Container, Flex, HStack, Text, useColorMode, Input, VStack } from "@chakra-ui/react";
-import { Link } from "react-router-dom";
-import { PlusSquareIcon } from "@chakra-ui/icons";
-import { IoMoon } from "react-icons/io5";
-import { LuSun } from "react-icons/lu";
-import { FaCog } from "react-icons/fa";
 import {
+  Button,
+  Container,
+  Flex,
+  HStack,
+  Text,
+  useColorMode,
+  Input,
+  VStack,
   Menu,
   MenuButton,
   MenuList,
@@ -13,9 +15,14 @@ import {
   MenuItem,
   Checkbox,
   Select,
-} from '@chakra-ui/react';
+  useToast
+} from "@chakra-ui/react";
+import { Link } from "react-router-dom";
+import { PlusSquareIcon } from "@chakra-ui/icons";
+import { IoMoon } from "react-icons/io5";
+import { LuSun } from "react-icons/lu";
+import { FaCog } from "react-icons/fa";
 import { useInventorySettings } from "../context/InventorySettingsContext";
-import { useToast } from "@chakra-ui/react";
 
 const Navbar = () => {
   const { colorMode, toggleColorMode } = useColorMode();
@@ -29,7 +36,6 @@ const Navbar = () => {
     setLowStockThreshold,
   } = useInventorySettings();
 
-  // Optional function to confirm threshold change with a toast message.
   const confirmThresholdChange = (e) => {
     e.stopPropagation();
     toast({
@@ -69,36 +75,31 @@ const Navbar = () => {
           <Button onClick={toggleColorMode}>
             {colorMode === "light" ? <IoMoon /> : <LuSun size="20" />}
           </Button>
+
           {/* Gear icon dropdown for inventory settings */}
           <Menu closeOnSelect={false}>
             <MenuButton as={Button}>
               <FaCog />
             </MenuButton>
             <MenuList>
-              <MenuGroup title="Inventory Settings">
-                <MenuItem onClick={(e) => e.stopPropagation()}>
-                  <Checkbox
-                    isChecked={showLowStockOnly}
-                    onChange={(e) => setShowLowStockOnly(e.target.checked)}
-                  >
-                    Show low stock only
-                  </Checkbox>
-                </MenuItem>
-                <MenuDivider />
-                <MenuItem onClick={(e) => e.stopPropagation()}>
-                  <Select
-                    value={sortOrder}
-                    onChange={(e) => setSortOrder(e.target.value)}
-                    width="full"
-                  >
-                    <option value="lowToHigh">Sort by Quantity: Low → High</option>
-                    <option value="highToLow">Sort by Quantity: High → Low</option>
-                  </Select>
-                </MenuItem>
-                <MenuDivider />
-                <MenuItem onClick={(e) => e.stopPropagation()}>
+              <MenuGroup>
+                {/* Inventory Settings Title */}
+                <Text fontSize="lg" fontWeight="bold" px={4} py={2}>
+                  Inventory Settings
+                </Text>
+
+                {/* 1. Low Stock Threshold */}
+                <MenuItem
+                  onClick={(e) => e.stopPropagation()}
+                  _hover={{ bg: "transparent" }}
+                  _focus={{ bg: "transparent" }}
+                  _focusVisible={{ bg: "transparent" }}
+                  tabIndex={-1}
+                >
                   <VStack spacing={2} w="full">
-                    <Text fontSize="sm">Low Stock Threshold</Text>
+                    <Text fontSize="md" alignSelf="flex-start" px={1}>
+                      Low Stock Threshold
+                    </Text>
                     <Input
                       placeholder="Threshold"
                       type="number"
@@ -107,15 +108,45 @@ const Navbar = () => {
                       onClick={(e) => e.stopPropagation()}
                       width="full"
                     />
-                    <Button
-                      size="sm"
-                      colorScheme="blue"
-                      onClick={confirmThresholdChange}
-                      onMouseDown={(e) => e.stopPropagation()}
-                    >
-                      Confirm
-                    </Button>
                   </VStack>
+                </MenuItem>
+
+                <MenuDivider />
+
+                {/* 2. Show low stock only */}
+                <MenuItem
+                  onClick={(e) => e.stopPropagation()}
+                  _hover={{ bg: "transparent" }}
+                  _focus={{ bg: "transparent" }}
+                  _focusVisible={{ bg: "transparent" }}
+                  tabIndex={-1}
+                >
+                  <Checkbox
+                    isChecked={showLowStockOnly}
+                    onChange={(e) => setShowLowStockOnly(e.target.checked)}
+                  >
+                    Show low stock only
+                  </Checkbox>
+                </MenuItem>
+
+                <MenuDivider />
+
+                {/* 3. Sort Order Dropdown */}
+                <MenuItem
+                  onClick={(e) => e.stopPropagation()}
+                  _hover={{ bg: "transparent" }}
+                  _focus={{ bg: "transparent" }}
+                  _focusVisible={{ bg: "transparent" }}
+                  tabIndex={-1}
+                >
+                  <Select
+                    value={sortOrder}
+                    onChange={(e) => setSortOrder(e.target.value)}
+                    width="full"
+                  >
+                    <option value="lowToHigh">Sort by Quantity: Low → High</option>
+                    <option value="highToLow">Sort by Quantity: High → Low</option>
+                  </Select>
                 </MenuItem>
               </MenuGroup>
             </MenuList>
