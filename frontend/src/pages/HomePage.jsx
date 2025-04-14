@@ -1,20 +1,21 @@
-import { Container, SimpleGrid, Text, VStack, Checkbox, Stack, Select } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
+import { Container, SimpleGrid, Text, VStack } from '@chakra-ui/react';
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useProductStore } from '../store/product';
 import ProductCard from '../components/ProductCard';
 import LowStockNotifications from '../components/LowStockNotifications';
+import { useInventorySettings } from "../context/InventorySettingsContext";  // Import our new context
 
 const HomePage = () => {
   const { fetchProducts, products, lowStockThreshold } = useProductStore();
-  const [showLowStockOnly, setShowLowStockOnly] = useState(false);
-  const [sortOrder, setSortOrder] = useState("lowToHigh");
+  // Use inventory settings from context instead of local state.
+  const { showLowStockOnly, sortOrder } = useInventorySettings();
 
   useEffect(() => {
     fetchProducts();
   }, [fetchProducts]);
 
-  // Filter by "low stock" if selected and then sort by quantity
+  // Apply filters and sorting using the shared settings.
   const sortedFilteredProducts = products
     .filter(product =>
       showLowStockOnly ? product.quantity < lowStockThreshold : true
@@ -44,23 +45,7 @@ const HomePage = () => {
           <LowStockNotifications />
         </VStack>
 
-        {/* Filter and Sort Controls */}
-        <Stack direction={["column", "row"]} w="full" justify="space-between" align="center">
-          <Checkbox
-            isChecked={showLowStockOnly}
-            onChange={(e) => setShowLowStockOnly(e.target.checked)}
-          >
-            Show low stock only
-          </Checkbox>
-          <Select
-            value={sortOrder}
-            onChange={(e) => setSortOrder(e.target.value)}
-            width="auto"
-          >
-            <option value="lowToHigh">Sort by Quantity: Low → High</option>
-            <option value="highToLow">Sort by Quantity: High → Low</option>
-          </Select>
-        </Stack>
+        {/* Filter and Sort Controls removed from here (now in Navbar) */}
 
         {/* Product List */}
         <SimpleGrid
