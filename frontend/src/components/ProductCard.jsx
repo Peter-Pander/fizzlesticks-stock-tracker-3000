@@ -20,13 +20,15 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import { EditIcon, DeleteIcon } from '@chakra-ui/icons';
-import { FaPlus, FaMinus } from 'react-icons/fa';
+import { FaPlus, FaMinus, FaUndo } from 'react-icons/fa';
 import { useProductStore } from '../store/product';
 import { useState } from 'react';
 
 const ProductCard = ({ product }) => {
   const textColor = useColorModeValue("gray.600", "gray.200");
   const bg = useColorModeValue("white", "gray.800");
+  // Set countdown text color: black in light mode, white in dark mode.
+  const countdownColor = useColorModeValue("black", "white");
 
   const { deleteProduct, updateProduct } = useProductStore();
   const toast = useToast();
@@ -50,15 +52,58 @@ const ProductCard = ({ product }) => {
   } = useDisclosure();
 
   const [updatedProduct, setUpdatedProduct] = useState(product);
-  const [restockAmount, setRestockAmount] = useState(""); // changed from 0
-  const [sellAmount, setSellAmount] = useState("");       // changed from 0
+  const [restockAmount, setRestockAmount] = useState(""); // starts empty
+  const [sellAmount, setSellAmount] = useState("");       // starts empty
 
+  // New local states for Undo deletion and countdown
+  const [pendingDelete, setPendingDelete] = useState(false);
+  const [deleteTimer, setDeleteTimer] = useState(null);
+  const [countdownTimer, setCountdownTimer] = useState(null);
+  const [countdown, setCountdown] = useState(0);
+
+  // Called after the timer expires.
   const handleDeleteProduct = async (pid) => {
     const { success, message } = await deleteProduct(pid);
     toast({
       title: success ? 'Success' : 'Error',
       description: message,
       status: success ? 'success' : 'error',
+      duration: 3000,
+      isClosable: true,
+    });
+  };
+
+  // Initiate deletion immediately but show an Undo area with a countdown.
+  const initiateDeleteProduct = (pid) => {
+    setPendingDelete(true);
+    setCountdown(5); // start at 5 seconds
+
+    // Start the deletion timer – after 5s, complete deletion.
+    const timer = setTimeout(() => {
+      clearInterval(countdownInterval);
+      handleDeleteProduct(pid);
+    }, 5000);
+    setDeleteTimer(timer);
+
+    // Start countdown interval to update every second.
+    const countdownInterval = setInterval(() => {
+      setCountdown(prev => (prev > 1 ? prev - 1 : 0));
+    }, 1000);
+    setCountdownTimer(countdownInterval);
+  };
+
+  // Undo deletion – clear timers and reset state.
+  const handleUndoDelete = () => {
+    clearTimeout(deleteTimer);
+    clearInterval(countdownTimer);
+    setDeleteTimer(null);
+    setCountdownTimer(null);
+    setCountdown(0);
+    setPendingDelete(false);
+    toast({
+      title: "Deletion cancelled",
+      description: "The product is still in your inventory.",
+      status: "info",
       duration: 3000,
       isClosable: true,
     });
@@ -161,10 +206,25 @@ const ProductCard = ({ product }) => {
           />
           <IconButton
             icon={<DeleteIcon />}
-            onClick={() => handleDeleteProduct(product._id)}
+            onClick={() => initiateDeleteProduct(product._id)}
             colorScheme='red'
             size='sm'
+            isDisabled={pendingDelete} // disable delete button while pending
           />
+          {pendingDelete && (
+            <>
+              <IconButton
+                icon={<FaUndo />}
+                aria-label="Undo Delete"
+                onClick={handleUndoDelete}
+                colorScheme='yellow'
+                size='sm'
+              />
+              <Text fontSize="sm" color={countdownColor}>
+                Deleting in {countdown}s...
+              </Text>
+            </>
+          )}
         </HStack>
       </Box>
 
