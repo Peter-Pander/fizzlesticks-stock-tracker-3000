@@ -4,13 +4,14 @@ import ChangeLog from '../models/changelog.model.js';
 
 export const getProducts = async (req, res) => {
   try {
-    const products = await Product.find({});
+    // Only fetch products for the authenticated user
+    const products = await Product.find({ user: req.user._id });
     res.status(200).json({
       success: true,
       data: products,
     });
   } catch (error) {
-    console.log("Error in Get products:", error.message);
+    console.error("Error in Get Products:", error.message);
     res.status(500).json({
       success: false,
       message: "Server Error",
@@ -19,16 +20,17 @@ export const getProducts = async (req, res) => {
 };
 
 export const createProduct = async (req, res) => {
-  const product = req.body; // user will send this data
+  const productData = req.body; // user sends product data
 
-  if (!product.name || !product.price || !product.image || product.quantity == null) {
+  if (!productData.name || !productData.price || !productData.image || productData.quantity == null) {
     return res.status(400).json({
       success: false,
       message: "Please provide all fields",
     });
   }
 
-  const newProduct = new Product(product);
+  // Attach the authenticated user's ID to the product
+  const newProduct = new Product({ ...productData, user: req.user._id });
 
   try {
     await newProduct.save();
@@ -37,7 +39,7 @@ export const createProduct = async (req, res) => {
       data: newProduct,
     });
   } catch (error) {
-    console.error("Error in Create product:", error.message);
+    console.error("Error in Create Product:", error.message);
     res.status(500).json({
       success: false,
       message: "Server Error",
@@ -57,7 +59,6 @@ export const updateProduct = async (req, res) => {
   }
 
   try {
-    // Fetch the existing product to compare the current quantity
     const product = await Product.findById(id);
     if (!product) {
       return res.status(404).json({
@@ -66,12 +67,16 @@ export const updateProduct = async (req, res) => {
       });
     }
 
-    // If the updateData includes a quantity and it differs from the current product quantity,
-    // record the changelog entry.
-    if (
-      updateData.quantity !== undefined &&
-      updateData.quantity !== product.quantity
-    ) {
+    // Ensure the product belongs to the logged-in user
+    if (product.user.toString() !== req.user._id.toString()) {
+      return res.status(401).json({
+        success: false,
+        message: "Not authorized to update this product",
+      });
+    }
+
+    // If quantity is being updated, record the change
+    if (updateData.quantity !== undefined && updateData.quantity !== product.quantity) {
       await ChangeLog.create({
         itemName: product.name,
         previousQuantity: product.quantity,
@@ -79,7 +84,7 @@ export const updateProduct = async (req, res) => {
       });
     }
 
-    // Apply the updates to the product
+    // Update product fields
     Object.assign(product, updateData);
     const updatedProduct = await product.save();
 
@@ -88,7 +93,7 @@ export const updateProduct = async (req, res) => {
       data: updatedProduct,
     });
   } catch (error) {
-    console.error("Error in Update product:", error.message);
+    console.error("Error in Update Product:", error.message);
     res.status(500).json({
       success: false,
       message: "Server Error",
@@ -107,13 +112,29 @@ export const deleteProduct = async (req, res) => {
   }
 
   try {
+    const product = await Product.findById(id);
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found",
+      });
+    }
+
+    // Ensure the product belongs to the logged-in user
+    if (product.user.toString() !== req.user._id.toString()) {
+      return res.status(401).json({
+        success: false,
+        message: "Not authorized to delete this product",
+      });
+    }
+
     await Product.findByIdAndDelete(id);
     res.status(200).json({
       success: true,
       message: "Product deleted successfully",
     });
   } catch (error) {
-    console.error("Error in deleting product:", error.message);
+    console.error("Error in Deleting Product:", error.message);
     res.status(500).json({
       success: false,
       message: "Server Error",
