@@ -13,7 +13,7 @@ function ChangeLogPage() {
 
   return (
     <Box p="6">
-      <Heading mb="4">Full Changelog</Heading>
+      <Heading mb="4">Full History</Heading>
       <VStack spacing="3" align="start">
         {logs.map(log => {
           const date = new Date(log.createdAt).toLocaleDateString("en-GB", {

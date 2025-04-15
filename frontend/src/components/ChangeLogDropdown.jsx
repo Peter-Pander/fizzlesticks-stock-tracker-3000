@@ -23,7 +23,7 @@ function ChangeLogDropdown() {
         />
         <MenuList>
           <Box px={3} py={2}>
-            <Text fontWeight="bold">Recent Changes</Text>
+            <Text fontWeight="bold">Recent Inventory Changes</Text>
           </Box>
           {logs.slice(0, 5).map((log) => {
             const date = new Date(log.createdAt).toLocaleDateString("en-GB", {
@@ -42,7 +42,7 @@ function ChangeLogDropdown() {
             );
           })}
           <MenuItem as="a" href="/changelog">
-            See full changelog →
+            View Full History →
           </MenuItem>
         </MenuList>
       </Menu>
