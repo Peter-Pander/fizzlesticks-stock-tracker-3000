@@ -106,6 +106,8 @@ const Navbar = () => {
                 <MenuItem
                   onClick={(e) => e.stopPropagation()}
                   _hover={{ bg: "transparent" }}
+                  _focus={{ bg: "transparent" }}
+                  _active={{ bg: "transparent" }}
                   tabIndex={-1}
                 >
                   <VStack spacing={2} w="full">
@@ -118,17 +120,15 @@ const Navbar = () => {
                       value={lowStockThreshold}
                       onChange={(e) => setLowStockThreshold(e.target.value)}
                       onClick={(e) => e.stopPropagation()}
+                      onFocus={(e) => e.stopPropagation()}
                       width="full"
+                      bg="transparent"
+                      _focus={{ bg: "transparent", boxShadow: "none" }}
+                      _active={{ bg: "transparent" }}
                     />
-                    <Button
-                      size="sm"
-                      colorScheme="blue"
-                      onClick={confirmThresholdChange}
-                    >
-                      Confirm
-                    </Button>
                   </VStack>
                 </MenuItem>
+
 
                 <MenuDivider />
 
