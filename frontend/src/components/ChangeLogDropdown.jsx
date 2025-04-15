@@ -1,5 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Flex, IconButton, Menu, MenuButton, MenuList, MenuItem, Box, Text } from "@chakra-ui/react";
+import {
+  Flex,
+  IconButton,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  Box,
+  Text,
+} from "@chakra-ui/react";
 import { FaRegClock } from "react-icons/fa6";
 import axios from "axios";
 
@@ -36,12 +45,22 @@ function ChangeLogDropdown() {
                 : `${log.previousQuantity} → ${log.newQuantity}`;
 
             return (
-              <MenuItem key={log._id}>
+              <MenuItem
+                key={log._id}
+                _hover={{ bg: "transparent" }}
+                _focus={{ bg: "transparent" }}
+                _active={{ bg: "transparent" }}
+              >
                 🕒 {date} – {log.itemName} {changeText}
               </MenuItem>
             );
           })}
-          <MenuItem as="a" href="/changelog">
+
+          <MenuItem
+            as="a"
+            href="/changelog"
+            _hover={{ bg: "gray.600", color: "white" }}
+          >
             View Full History →
           </MenuItem>
         </MenuList>
