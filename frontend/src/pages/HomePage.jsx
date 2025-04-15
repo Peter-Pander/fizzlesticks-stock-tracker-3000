@@ -5,18 +5,19 @@ import { Link } from 'react-router-dom';
 import { useProductStore } from '../store/product';
 import ProductCard from '../components/ProductCard';
 import LowStockNotifications from '../components/LowStockNotifications';
-import { useInventorySettings } from "../context/InventorySettingsContext";  // Import our shared context
+import { useInventorySettings } from "../context/InventorySettingsContext";  // Shared context
 
 const HomePage = () => {
   const { fetchProducts, products } = useProductStore();
-  // Get shared inventory settings (including lowStockThreshold) from context.
   const { showLowStockOnly, sortOrder, lowStockThreshold } = useInventorySettings();
 
   useEffect(() => {
+    // fetchProducts in the store now uses the token to call /api/products and returns user-specific products.
     fetchProducts();
   }, [fetchProducts]);
 
   // Filter and sort products using the shared settings.
+  // Note: No manual user filtering is needed since the backend already returns only the logged-in user's products.
   const sortedFilteredProducts = products
     .filter(product =>
       showLowStockOnly ? product.quantity < Number(lowStockThreshold) : true
@@ -45,8 +46,6 @@ const HomePage = () => {
           </Text>
           <LowStockNotifications />
         </VStack>
-
-        {/* Filter and Sort Controls have been moved to the Navbar */}
 
         {/* Product List */}
         <SimpleGrid
