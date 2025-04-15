@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 const { Schema, model } = mongoose;
 
 const changelogSchema = new Schema({
@@ -8,4 +8,4 @@ const changelogSchema = new Schema({
   createdAt: { type: Date, default: Date.now },
 });
 
-module.exports = model('ChangeLog', changelogSchema);
+export default model('ChangeLog', changelogSchema);
