@@ -4,6 +4,7 @@ import path from 'path';
 import { connectDB } from './config/db.js';
 
 import productRoutes from './routes/product.route.js';
+import changelogRoutes from './routes/changelog.route.js'; // Import the changelog route
 
 dotenv.config();
 
@@ -15,7 +16,9 @@ const __dirname = path.resolve();
 
 app.use(express.json()); // Allows us to accept JSON data in the req.body
 
+// Mount routes
 app.use("/api/products", productRoutes);
+app.use("/api/logs", changelogRoutes); // Mount the changelog route
 
 // Serve static frontend in production
 if (process.env.NODE_ENV === "production") {
