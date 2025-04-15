@@ -7,13 +7,13 @@ export const getProducts = async (req, res) => {
     const products = await Product.find({});
     res.status(200).json({
       success: true,
-      data: products
+      data: products,
     });
   } catch (error) {
     console.log("Error in Get products:", error.message);
     res.status(500).json({
       success: false,
-      message: "Server Error"
+      message: "Server Error",
     });
   }
 };
@@ -24,7 +24,7 @@ export const createProduct = async (req, res) => {
   if (!product.name || !product.price || !product.image || product.quantity == null) {
     return res.status(400).json({
       success: false,
-      message: "Please provide all fields"
+      message: "Please provide all fields",
     });
   }
 
@@ -34,13 +34,13 @@ export const createProduct = async (req, res) => {
     await newProduct.save();
     res.status(201).json({
       success: true,
-      data: newProduct
+      data: newProduct,
     });
   } catch (error) {
     console.error("Error in Create product:", error.message);
     res.status(500).json({
       success: false,
-      message: "Server Error"
+      message: "Server Error",
     });
   }
 };
@@ -52,22 +52,26 @@ export const updateProduct = async (req, res) => {
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(404).json({
       success: false,
-      message: "Invalid Product ID"
+      message: "Invalid Product ID",
     });
   }
 
   try {
-    // First, fetch the existing product to compare the current quantity
+    // Fetch the existing product to compare the current quantity
     const product = await Product.findById(id);
     if (!product) {
       return res.status(404).json({
         success: false,
-        message: "Product not found"
+        message: "Product not found",
       });
     }
 
-    // If the updateData includes a quantity and it differs from the current product quantity, record the change.
-    if (updateData.quantity !== undefined && updateData.quantity !== product.quantity) {
+    // If the updateData includes a quantity and it differs from the current product quantity,
+    // record the changelog entry.
+    if (
+      updateData.quantity !== undefined &&
+      updateData.quantity !== product.quantity
+    ) {
       await ChangeLog.create({
         itemName: product.name,
         previousQuantity: product.quantity,
@@ -81,13 +85,13 @@ export const updateProduct = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      data: updatedProduct
+      data: updatedProduct,
     });
   } catch (error) {
     console.error("Error in Update product:", error.message);
     res.status(500).json({
       success: false,
-      message: "Server Error"
+      message: "Server Error",
     });
   }
 };
@@ -98,7 +102,7 @@ export const deleteProduct = async (req, res) => {
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(404).json({
       success: false,
-      message: "Invalid Product ID"
+      message: "Invalid Product ID",
     });
   }
 
@@ -106,13 +110,13 @@ export const deleteProduct = async (req, res) => {
     await Product.findByIdAndDelete(id);
     res.status(200).json({
       success: true,
-      message: "Product deleted successfully"
+      message: "Product deleted successfully",
     });
   } catch (error) {
     console.error("Error in deleting product:", error.message);
     res.status(500).json({
       success: false,
-      message: "Server Error"
+      message: "Server Error",
     });
   }
 };
