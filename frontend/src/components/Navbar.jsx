@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import {
   Button,
   Container,
@@ -15,18 +16,25 @@ import {
   MenuItem,
   Checkbox,
   Select,
-  useToast
+  useToast,
+  IconButton,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
-import { PlusSquareIcon } from "@chakra-ui/icons";
+import { PlusSquareIcon, EditIcon } from "@chakra-ui/icons";
 import { IoMoon } from "react-icons/io5";
 import { LuSun } from "react-icons/lu";
 import { FaCog } from "react-icons/fa";
+
+// Import your context & the ChangelogDropdown
 import { useInventorySettings } from "../context/InventorySettingsContext";
+import ChangeLogDropdown from "./ChangeLogDropdown"; // <--- Add this
 
 const Navbar = () => {
   const { colorMode, toggleColorMode } = useColorMode();
   const toast = useToast();
+
+  // Inventory settings from context
   const {
     showLowStockOnly,
     setShowLowStockOnly,
@@ -36,6 +44,7 @@ const Navbar = () => {
     setLowStockThreshold,
   } = useInventorySettings();
 
+  // Helper to confirm threshold
   const confirmThresholdChange = (e) => {
     e.stopPropagation();
     toast({
@@ -55,6 +64,7 @@ const Navbar = () => {
         justifyContent={"space-between"}
         flexDir={{ base: "column", sm: "row" }}
       >
+        {/* --- App Title --- */}
         <Text
           fontSize={{ base: "22", sm: "28" }}
           fontWeight={"bold"}
@@ -66,17 +76,21 @@ const Navbar = () => {
           <Link to={"/"}> ✨ Fizzlestick's Stock Tracker 3000 🔮✨ </Link>
         </Text>
 
+        {/* --- Right side icons: create, color mode, settings, changelog --- */}
         <HStack spacing={2} alignItems={"center"}>
+          {/* Create new product button */}
           <Link to={"/create"}>
             <Button>
               <PlusSquareIcon fontSize={20} />
             </Button>
           </Link>
+
+          {/* Toggle light/dark mode */}
           <Button onClick={toggleColorMode}>
             {colorMode === "light" ? <IoMoon /> : <LuSun size="20" />}
           </Button>
 
-          {/* Gear icon dropdown for inventory settings */}
+          {/* Gear icon: Inventory Settings */}
           <Menu closeOnSelect={false}>
             <MenuButton as={Button}>
               <FaCog />
@@ -93,11 +107,11 @@ const Navbar = () => {
                   onClick={(e) => e.stopPropagation()}
                   _hover={{ bg: "transparent" }}
                   _focus={{ bg: "transparent" }}
-                  _focusVisible={{ bg: "transparent" }}
+                  _active={{ bg: "transparent" }}
                   tabIndex={-1}
                 >
                   <VStack spacing={2} w="full">
-                    <Text fontSize="md" alignSelf="flex-start" px={1}>
+                    <Text fontSize="md" alignSelf="flex-start">
                       Low Stock Threshold
                     </Text>
                     <Input
@@ -106,10 +120,15 @@ const Navbar = () => {
                       value={lowStockThreshold}
                       onChange={(e) => setLowStockThreshold(e.target.value)}
                       onClick={(e) => e.stopPropagation()}
+                      onFocus={(e) => e.stopPropagation()}
                       width="full"
+                      bg="transparent"
+                      _focus={{ bg: "transparent", boxShadow: "none" }}
+                      _active={{ bg: "transparent" }}
                     />
                   </VStack>
                 </MenuItem>
+
 
                 <MenuDivider />
 
@@ -117,8 +136,6 @@ const Navbar = () => {
                 <MenuItem
                   onClick={(e) => e.stopPropagation()}
                   _hover={{ bg: "transparent" }}
-                  _focus={{ bg: "transparent" }}
-                  _focusVisible={{ bg: "transparent" }}
                   tabIndex={-1}
                 >
                   <Checkbox
@@ -135,8 +152,6 @@ const Navbar = () => {
                 <MenuItem
                   onClick={(e) => e.stopPropagation()}
                   _hover={{ bg: "transparent" }}
-                  _focus={{ bg: "transparent" }}
-                  _focusVisible={{ bg: "transparent" }}
                   tabIndex={-1}
                 >
                   <Select
@@ -144,13 +159,20 @@ const Navbar = () => {
                     onChange={(e) => setSortOrder(e.target.value)}
                     width="full"
                   >
-                    <option value="lowToHigh">Sort by Quantity: Low → High</option>
-                    <option value="highToLow">Sort by Quantity: High → Low</option>
+                    <option value="lowToHigh">
+                      Sort by Quantity: Low → High
+                    </option>
+                    <option value="highToLow">
+                      Sort by Quantity: High → Low
+                    </option>
                   </Select>
                 </MenuItem>
               </MenuGroup>
             </MenuList>
           </Menu>
+
+          {/* Changelog icon: separate from gear, use EditIcon */}
+          <ChangeLogDropdown />
         </HStack>
       </Flex>
     </Container>

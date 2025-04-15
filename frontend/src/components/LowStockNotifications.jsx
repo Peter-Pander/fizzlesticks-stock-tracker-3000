@@ -15,23 +15,26 @@ import { useProductStore } from '../store/product';
 import { useInventorySettings } from '../context/InventorySettingsContext';
 
 const LowStockNotifications = () => {
+  // Always call hooks at the top level
   const products = useProductStore((state) => state.products);
   const { lowStockThreshold } = useInventorySettings();
-  const thresholdNumber = Number(lowStockThreshold);
-  // Get the low-stock items and sort them ascending by quantity
-  const lowStockItems = getLowStockItems(products, thresholdNumber)
-    .sort((a, b) => a.quantity - b.quantity);
-
   const [visible, setVisible] = useState(true);
 
-  if (lowStockItems.length === 0 || !visible) {
-    return null;
-  }
-
+  // Color mode hooks – always run these regardless of conditions
   const bgColor = useColorModeValue("yellow.100", "yellow.300");
   const textColor = useColorModeValue("gray.800", "gray.900");
   const borderColor = useColorModeValue("yellow.300", "yellow.400");
   const iconColor = "black";
+
+  // Compute low stock items
+  const thresholdNumber = Number(lowStockThreshold);
+  const lowStockItems = getLowStockItems(products, thresholdNumber)
+    .sort((a, b) => a.quantity - b.quantity);
+
+  // Now conditionally return null if there are no items or notifications are dismissed
+  if (lowStockItems.length === 0 || !visible) {
+    return null;
+  }
 
   return (
     <Container>
