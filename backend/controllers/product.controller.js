@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
-import Product from "../models/product.model.js";
+import Product from '../models/product.model.js';
+import ChangeLog from '../models/changelog.model.js';
 
 export const getProducts = async (req, res) => {
   try {
@@ -46,7 +47,7 @@ export const createProduct = async (req, res) => {
 
 export const updateProduct = async (req, res) => {
   const { id } = req.params;
-  const product = req.body;
+  const updateData = req.body;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(404).json({
@@ -56,7 +57,28 @@ export const updateProduct = async (req, res) => {
   }
 
   try {
-    const updatedProduct = await Product.findByIdAndUpdate(id, product, { new: true });
+    // First, fetch the existing product to compare the current quantity
+    const product = await Product.findById(id);
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found"
+      });
+    }
+
+    // If the updateData includes a quantity and it differs from the current product quantity, record the change.
+    if (updateData.quantity !== undefined && updateData.quantity !== product.quantity) {
+      await ChangeLog.create({
+        itemName: product.name,
+        previousQuantity: product.quantity,
+        newQuantity: updateData.quantity,
+      });
+    }
+
+    // Apply the updates to the product
+    Object.assign(product, updateData);
+    const updatedProduct = await product.save();
+
     res.status(200).json({
       success: true,
       data: updatedProduct
