@@ -4,6 +4,7 @@ import { Box, useColorModeValue } from "@chakra-ui/react";
 import { Route, Routes } from "react-router-dom";
 import CreatePage from "./pages/CreatePage";
 import HomePage from "./pages/HomePage";
+import ChangeLogPage from "./pages/ChangeLogPage"; // Import the changelog page
 import Navbar from "./components/Navbar";
 import { useProductStore } from "./store/product";
 // NEW: Import the provider from our InventorySettingsContext
@@ -25,6 +26,7 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/create" element={<CreatePage />} />
+          <Route path="/changelog" element={<ChangeLogPage />} /> {/* New route */}
         </Routes>
       </Box>
     </InventorySettingsProvider>
