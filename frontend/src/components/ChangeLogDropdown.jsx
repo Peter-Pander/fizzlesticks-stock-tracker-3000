@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Flex, IconButton, Menu, MenuButton, MenuList, MenuItem, Box, Text } from "@chakra-ui/react";
-// Import a different icon (EditIcon) so we don't have two gears
-import { EditIcon } from "@chakra-ui/icons";
+import { FaRegClock } from "react-icons/fa6";
 import axios from "axios";
 
 function ChangeLogDropdown() {
@@ -16,18 +15,16 @@ function ChangeLogDropdown() {
 
   return (
     <Flex align="center" gap={2}>
-      {/* No gear icon here; use EditIcon (or any icon you like) */}
       <Menu>
         <MenuButton
           as={IconButton}
-          icon={<EditIcon />}     // <--- Replace gear with EditIcon
+          icon={<FaRegClock />}
           aria-label="Changelog"
         />
         <MenuList>
           <Box px={3} py={2}>
             <Text fontWeight="bold">Recent Changes</Text>
           </Box>
-
           {logs.slice(0, 5).map((log) => {
             const date = new Date(log.createdAt).toLocaleDateString("en-GB", {
               day: "2-digit",
@@ -44,7 +41,6 @@ function ChangeLogDropdown() {
               </MenuItem>
             );
           })}
-
           <MenuItem as="a" href="/changelog">
             See full changelog →
           </MenuItem>
