@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import Product from '../models/product.model.js';
 import ChangeLog from '../models/changelog.model.js';
 
+// GET /api/products
 export const getProducts = async (req, res) => {
   try {
     // Only fetch products for the authenticated user
@@ -19,17 +20,24 @@ export const getProducts = async (req, res) => {
   }
 };
 
+// POST /api/products
 export const createProduct = async (req, res) => {
-  const productData = req.body; // user sends product data
+  const productData = req.body; // Data sent by the client
 
-  if (!productData.name || !productData.price || !productData.image || productData.quantity == null) {
+  // Validate required fields
+  if (
+    !productData.name ||
+    !productData.price ||
+    !productData.image ||
+    productData.quantity == null
+  ) {
     return res.status(400).json({
       success: false,
       message: "Please provide all fields",
     });
   }
 
-  // Attach the authenticated user's ID to the product
+  // Attach the authenticated user's ID to the product data
   const newProduct = new Product({ ...productData, user: req.user._id });
 
   try {
@@ -47,10 +55,12 @@ export const createProduct = async (req, res) => {
   }
 };
 
+// PUT /api/products/:id
 export const updateProduct = async (req, res) => {
   const { id } = req.params;
   const updateData = req.body;
 
+  // Validate the product ID
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(404).json({
       success: false,
@@ -59,6 +69,7 @@ export const updateProduct = async (req, res) => {
   }
 
   try {
+    // Find product by ID
     const product = await Product.findById(id);
     if (!product) {
       return res.status(404).json({
@@ -67,7 +78,7 @@ export const updateProduct = async (req, res) => {
       });
     }
 
-    // Ensure the product belongs to the logged-in user
+    // Ensure the product belongs to the authenticated user
     if (product.user.toString() !== req.user._id.toString()) {
       return res.status(401).json({
         success: false,
@@ -75,8 +86,11 @@ export const updateProduct = async (req, res) => {
       });
     }
 
-    // If quantity is being updated, record the change
-    if (updateData.quantity !== undefined && updateData.quantity !== product.quantity) {
+    // If the update includes a change in quantity, record the change in the ChangeLog
+    if (
+      updateData.quantity !== undefined &&
+      updateData.quantity !== product.quantity
+    ) {
       await ChangeLog.create({
         itemName: product.name,
         previousQuantity: product.quantity,
@@ -101,9 +115,11 @@ export const updateProduct = async (req, res) => {
   }
 };
 
+// DELETE /api/products/:id
 export const deleteProduct = async (req, res) => {
   const { id } = req.params;
 
+  // Validate the product ID
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(404).json({
       success: false,
@@ -120,7 +136,7 @@ export const deleteProduct = async (req, res) => {
       });
     }
 
-    // Ensure the product belongs to the logged-in user
+    // Ensure the product belongs to the authenticated user
     if (product.user.toString() !== req.user._id.toString()) {
       return res.status(401).json({
         success: false,
