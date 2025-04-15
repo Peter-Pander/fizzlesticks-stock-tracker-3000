@@ -33,8 +33,8 @@ function ChangeLogPage() {
         setLogs([]);
         toast.closeAll();
         toast({
-          title: "History Deleted",
-          description: "All logs have been removed.",
+          title: "Inventory History Deleted",
+          description: "The full history of inventory changes has been cleared.",
           status: "warning",
           duration: 3000,
           isClosable: true,
