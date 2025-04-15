@@ -23,6 +23,7 @@ import { IoMoon } from "react-icons/io5";
 import { LuSun } from "react-icons/lu";
 import { FaCog } from "react-icons/fa";
 import { useInventorySettings } from "../context/InventorySettingsContext";
+import ChangeLogDropdown from "../components/ChangeLogDropdown"; // Import the changelog dropdown
 
 const Navbar = () => {
   const { colorMode, toggleColorMode } = useColorMode();
@@ -75,6 +76,9 @@ const Navbar = () => {
           <Button onClick={toggleColorMode}>
             {colorMode === "light" ? <IoMoon /> : <LuSun size="20" />}
           </Button>
+
+          {/* Changelog dropdown icon */}
+          <ChangeLogDropdown onSettingsClick={() => console.log("Changelog icon clicked!")} />
 
           {/* Gear icon dropdown for inventory settings */}
           <Menu closeOnSelect={false}>
