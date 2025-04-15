@@ -111,9 +111,12 @@ function ChangeLogPage() {
         })}
       </VStack>
 
-      <Button colorScheme="red" mt={4} onClick={handleDeleteHistory}>
-        Delete Full History
-      </Button>
+      {/* Only render the delete button if there is history */}
+      {logs.length > 0 && (
+        <Button colorScheme="red" mt={4} onClick={handleDeleteHistory}>
+          Delete Full History
+        </Button>
+      )}
     </Box>
   );
 }
