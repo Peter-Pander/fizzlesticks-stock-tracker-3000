@@ -19,7 +19,6 @@ import {
   useToast,
   IconButton,
   useColorModeValue,
-  Avatar,
   Link as ChakraLink,
 } from "@chakra-ui/react";
 import { Link, useNavigate } from "react-router-dom";
@@ -27,6 +26,7 @@ import { PlusSquareIcon, EditIcon } from "@chakra-ui/icons";
 import { IoMoon } from "react-icons/io5";
 import { LuSun } from "react-icons/lu";
 import { FaCog } from "react-icons/fa";
+import { FaUser } from "react-icons/fa";               // ← new import
 
 // Import your context & the ChangelogDropdown
 import { useInventorySettings } from "../context/InventorySettingsContext";
@@ -112,7 +112,7 @@ const Navbar = () => {
             </MenuButton>
             <MenuList>
               <MenuGroup>
-              {/* Inventory Settings Title */}
+                {/* Inventory Settings Title */}
                 <Text fontSize="lg" fontWeight="bold" px={4} py={2}>
                   Inventory Settings
                 </Text>
@@ -143,7 +143,6 @@ const Navbar = () => {
                     />
                   </VStack>
                 </MenuItem>
-
 
                 <MenuDivider />
 
@@ -189,25 +188,23 @@ const Navbar = () => {
           {/* Changelog icon */}
           <ChangeLogDropdown />
 
-          {/* NEW: User avatar dropdown */}
-          <Menu>
-            <MenuButton as={IconButton} variant="ghost">
-              <Avatar size="sm" name={user?.email || "Guest"} />
-            </MenuButton>
-            <MenuList>
-              {user ? (
-                <>
-                  <MenuItem isDisabled>{user.email}</MenuItem>
-                  <MenuDivider />
-                  <MenuItem onClick={handleLogout}>Logout</MenuItem>
-                </>
-              ) : (
-                <MenuItem as={ChakraLink} to="/login">
-                  Login
-                </MenuItem>
-              )}
-            </MenuList>
-          </Menu>
+          {/* NEW: User icon or Login text */}
+          {user ? (
+            <Menu>
+              <MenuButton as={IconButton} variant="ghost">
+                <FaUser />
+              </MenuButton>
+              <MenuList>
+                <MenuItem isDisabled>{user.email}</MenuItem>
+                <MenuDivider />
+                <MenuItem onClick={handleLogout}>Logout</MenuItem>
+              </MenuList>
+            </Menu>
+          ) : (
+            <ChakraLink as={Link} to="/login" fontWeight="medium">
+              Login
+            </ChakraLink>
+          )}
         </HStack>
       </Flex>
     </Container>
