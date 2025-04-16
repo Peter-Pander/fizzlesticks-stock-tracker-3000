@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext } from "react";
 import {
   Button,
   Container,
@@ -19,8 +19,10 @@ import {
   useToast,
   IconButton,
   useColorModeValue,
+  Avatar,
+  Link as ChakraLink,
 } from "@chakra-ui/react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { PlusSquareIcon, EditIcon } from "@chakra-ui/icons";
 import { IoMoon } from "react-icons/io5";
 import { LuSun } from "react-icons/lu";
@@ -28,11 +30,18 @@ import { FaCog } from "react-icons/fa";
 
 // Import your context & the ChangelogDropdown
 import { useInventorySettings } from "../context/InventorySettingsContext";
-import ChangeLogDropdown from "./ChangeLogDropdown"; // <--- Add this
+import ChangeLogDropdown from "./ChangeLogDropdown";
+
+// NEW: import AuthContext
+import { AuthContext } from "../context/AuthContext";
 
 const Navbar = () => {
   const { colorMode, toggleColorMode } = useColorMode();
   const toast = useToast();
+
+  // NEW: pull user + logout
+  const { user, logout } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   // Inventory settings from context
   const {
@@ -56,6 +65,12 @@ const Navbar = () => {
     });
   };
 
+  // NEW: logout handler
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
+
   return (
     <Container maxW={"1140px"} px={4}>
       <Flex
@@ -76,7 +91,7 @@ const Navbar = () => {
           <Link to={"/"}> ✨ Fizzlestick's Stock Tracker 3000 🔮✨ </Link>
         </Text>
 
-        {/* --- Right side icons: create, color mode, settings, changelog --- */}
+        {/* --- Right side icons: create, color mode, settings, changelog, user --- */}
         <HStack spacing={2} alignItems={"center"}>
           {/* Create new product button */}
           <Link to={"/create"}>
@@ -97,7 +112,7 @@ const Navbar = () => {
             </MenuButton>
             <MenuList>
               <MenuGroup>
-                {/* Inventory Settings Title */}
+              {/* Inventory Settings Title */}
                 <Text fontSize="lg" fontWeight="bold" px={4} py={2}>
                   Inventory Settings
                 </Text>
@@ -171,8 +186,28 @@ const Navbar = () => {
             </MenuList>
           </Menu>
 
-          {/* Changelog icon: separate from gear, use EditIcon */}
+          {/* Changelog icon */}
           <ChangeLogDropdown />
+
+          {/* NEW: User avatar dropdown */}
+          <Menu>
+            <MenuButton as={IconButton} variant="ghost">
+              <Avatar size="sm" name={user?.email || "Guest"} />
+            </MenuButton>
+            <MenuList>
+              {user ? (
+                <>
+                  <MenuItem isDisabled>{user.email}</MenuItem>
+                  <MenuDivider />
+                  <MenuItem onClick={handleLogout}>Logout</MenuItem>
+                </>
+              ) : (
+                <MenuItem as={ChakraLink} to="/login">
+                  Login
+                </MenuItem>
+              )}
+            </MenuList>
+          </Menu>
         </HStack>
       </Flex>
     </Container>
