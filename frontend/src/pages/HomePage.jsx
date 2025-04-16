@@ -1,7 +1,8 @@
 // src/pages/HomePage.jsx
-import { Container, SimpleGrid, Text, VStack } from '@chakra-ui/react';
-import { useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Container, SimpleGrid, Text, VStack, useToast } from '@chakra-ui/react'; // added useToast
+import { useContext, useEffect } from "react";
+import { AuthContext } from "../context/AuthContext";
+import { useNavigate } from 'react-router-dom';                         // added useNavigate
 import { useProductStore } from '../store/product';
 import ProductCard from '../components/ProductCard';
 import LowStockNotifications from '../components/LowStockNotifications';
@@ -11,24 +12,30 @@ const HomePage = () => {
   const { fetchProducts, products } = useProductStore();
   const { showLowStockOnly, sortOrder, lowStockThreshold } = useInventorySettings();
 
-  useEffect(() => {
-    // fetchProducts in the store now uses the token to call /api/products and returns user-specific products.
-    fetchProducts();
-  }, [fetchProducts]);
+  const { user } = useContext(AuthContext);
+  const toast = useToast();         // ← hook for toasts
+  const navigate = useNavigate();   // ← hook for navigation
 
-  // Filter and sort products using the shared settings.
-  // Note: No manual user filtering is needed since the backend already returns only the logged-in user's products.
-  const sortedFilteredProducts = products
-    .filter(product =>
-      showLowStockOnly ? product.quantity < Number(lowStockThreshold) : true
-    )
-    .sort((a, b) => {
-      if (sortOrder === "lowToHigh") {
-        return a.quantity - b.quantity;
-      }
-      // sortOrder is "highToLow"
-      return b.quantity - a.quantity;
-    });
+  useEffect(() => {
+    if (user) {
+      fetchProducts();
+    }
+  }, [fetchProducts, user]);
+
+  // 🔒 Only show products if there's a logged-in user
+  const sortedFilteredProducts = user
+    ? products
+        .filter(product =>
+          showLowStockOnly ? product.quantity < Number(lowStockThreshold) : true
+        )
+        .sort((a, b) => {
+          if (sortOrder === "lowToHigh") {
+            return a.quantity - b.quantity;
+          }
+          // sortOrder is "highToLow"
+          return b.quantity - a.quantity;
+        })
+    : [];
 
   return (
     <Container maxW={"container.xl"} py={12}>
@@ -44,7 +51,8 @@ const HomePage = () => {
           >
             Inventory
           </Text>
-          <LowStockNotifications />
+          {/* only show notifications when user is logged in */}
+          {user && <LowStockNotifications />}
         </VStack>
 
         {/* Product List */}
@@ -70,11 +78,27 @@ const HomePage = () => {
             color="gray.500"
           >
             No products found 😢{" "}
-            <Link to={"/create"}>
-              <Text as="span" color="blue.500" _hover={{ textDecoration: "underline" }}>
-                Create a product
-              </Text>
-            </Link>
+            <Text
+              as="span"
+              color="blue.500"
+              cursor="pointer"
+              _hover={{ textDecoration: "underline" }}
+              onClick={() => {
+                if (!user) {
+                  toast({
+                    title: "Unauthorized",
+                    description: "You must be logged in to create a product.",
+                    status: "warning",
+                    duration: 3000,
+                    isClosable: true,
+                  });
+                } else {
+                  navigate("/create");
+                }
+              }}
+            >
+              Create a product
+            </Text>
           </Text>
         )}
       </VStack>

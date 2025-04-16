@@ -3,6 +3,7 @@ import { create } from "zustand";
 export const useProductStore = create((set) => ({
   products: [],
   setProducts: (products) => set({ products }),
+  resetProducts: () => set({ products: [] }), // ← Clear all products on logout or unauthenticated
 
   // 🔔 NEW: Low stock threshold and setter
   lowStockThreshold: 5,
@@ -37,14 +38,29 @@ export const useProductStore = create((set) => ({
     // Retrieve the JWT token from localStorage
     const token = localStorage.getItem("token");
 
-    const res = await fetch("/api/products", {
-      headers: {
-        "Authorization": token ? `Bearer ${token}` : ""
-      }
-    });
-    const data = await res.json();
-    // Update the store with products specific to this user
-    set({ products: data.data });
+    // If no token, clear products and don’t attempt fetch
+    if (!token) {
+      set({ products: [] });
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/products", {
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      });
+
+      // Treat non-OK (401, etc.) as “no products”
+      if (!res.ok) throw new Error("Unauthorized");
+
+      const data = await res.json();
+      // Update the store with products specific to this user
+      set({ products: data.data || [] });
+    } catch (error) {
+      console.warn("fetchProducts failed:", error);
+      set({ products: [] });
+    }
   },
 
   deleteProduct: async (pid) => {

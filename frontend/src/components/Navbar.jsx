@@ -22,11 +22,10 @@ import {
   Link as ChakraLink,
 } from "@chakra-ui/react";
 import { Link, useNavigate } from "react-router-dom";
-import { PlusSquareIcon, EditIcon } from "@chakra-ui/icons";
+import { PlusSquareIcon } from "@chakra-ui/icons";
 import { IoMoon } from "react-icons/io5";
 import { LuSun } from "react-icons/lu";
-import { FaCog } from "react-icons/fa";
-import { FaUser } from "react-icons/fa";
+import { FaCog, FaUser } from "react-icons/fa";
 
 // Import your context & the ChangelogDropdown
 import { useInventorySettings } from "../context/InventorySettingsContext";
@@ -94,11 +93,23 @@ const Navbar = () => {
         {/* --- Right side icons: create, color mode, settings, changelog, user --- */}
         <HStack spacing={2} alignItems={"center"}>
           {/* Create new product button */}
-          <Link to={"/create"}>
-            <Button>
-              <PlusSquareIcon fontSize={20} />
-            </Button>
-          </Link>
+          <Button
+            onClick={() => {
+              if (!user) {
+                toast({
+                  title: "Unauthorized",
+                  description: "You must be logged in to create a product.",
+                  status: "warning",
+                  duration: 3000,
+                  isClosable: true,
+                });
+              } else {
+                navigate("/create");
+              }
+            }}
+          >
+            <PlusSquareIcon fontSize={20} />
+          </Button>
 
           {/* Toggle light/dark mode */}
           <Button onClick={toggleColorMode}>
@@ -188,35 +199,35 @@ const Navbar = () => {
           {/* Changelog icon */}
           <ChangeLogDropdown />
 
+          {/* NEW: User icon menu */}
           {user ? (
             <Menu>
-            <MenuButton
-              as={Button}
-              variant="ghost"
-              p={4}
-              _hover={{ bg: useColorModeValue("gray.200", "gray.700") }}
-            >
-              <FaUser />
-            </MenuButton>
-            <MenuList>
-              <MenuItem isDisabled>{user.email}</MenuItem>
-              <MenuDivider />
-              <MenuItem onClick={handleLogout}>Logout</MenuItem>
-            </MenuList>
+              <MenuButton
+                as={IconButton}
+                icon={<FaUser />}
+                variant="ghost"
+                aria-label="User menu"
+                size="sm"
+                _hover={{ bg: useColorModeValue("gray.200", "gray.700") }}
+              />
+              <MenuList>
+                <MenuItem isDisabled>{user.email}</MenuItem>
+                <MenuDivider />
+                <MenuItem onClick={handleLogout}>Logout</MenuItem>
+              </MenuList>
             </Menu>
           ) : (
             <Button
               as={Link}
               to="/login"
               variant="ghost"
-              p={2}
+              size="sm"
               fontWeight="medium"
               _hover={{ bg: useColorModeValue("gray.200", "gray.700") }}
             >
               Login
             </Button>
           )}
-
         </HStack>
       </Flex>
     </Container>
