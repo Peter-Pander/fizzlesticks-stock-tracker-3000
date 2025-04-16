@@ -3,7 +3,9 @@ import { Box, useColorModeValue } from "@chakra-ui/react";
 import { Route, Routes } from "react-router-dom";
 import CreatePage from "./pages/CreatePage";
 import HomePage from "./pages/HomePage";
-import ChangeLogPage from "./pages/ChangeLogPage"; // Import the changelog page
+import ChangeLogPage from "./pages/ChangeLogPage";
+import Login from "./pages/Login.jsx";
+import Register from "./pages/Register.jsx";
 import Navbar from "./components/Navbar";
 import { useProductStore } from "./store/product";
 // Import providers for InventorySettings and Auth
@@ -26,6 +28,8 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/create" element={<CreatePage />} />
             <Route path="/changelog" element={<ChangeLogPage />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/login" element={<Login />} />
           </Routes>
         </Box>
       </InventorySettingsProvider>

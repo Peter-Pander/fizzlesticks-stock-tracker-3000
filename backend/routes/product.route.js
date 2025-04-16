@@ -1,5 +1,5 @@
 import express from 'express';
-
+import requireAuth from '../middleware/auth.js';
 import {
   getProducts,
   createProduct,
@@ -8,6 +8,9 @@ import {
 } from '../controllers/product.controller.js';
 
 const router = express.Router();
+
+// Protect all routes in this router with authentication
+router.use(requireAuth);
 
 router.get("/", getProducts);
 router.post("/", createProduct);
