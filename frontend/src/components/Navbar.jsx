@@ -26,7 +26,7 @@ import { PlusSquareIcon, EditIcon } from "@chakra-ui/icons";
 import { IoMoon } from "react-icons/io5";
 import { LuSun } from "react-icons/lu";
 import { FaCog } from "react-icons/fa";
-import { FaUser } from "react-icons/fa";               // ← new import
+import { FaUser } from "react-icons/fa";
 
 // Import your context & the ChangelogDropdown
 import { useInventorySettings } from "../context/InventorySettingsContext";
@@ -188,23 +188,35 @@ const Navbar = () => {
           {/* Changelog icon */}
           <ChangeLogDropdown />
 
-          {/* NEW: User icon or Login text */}
           {user ? (
             <Menu>
-              <MenuButton as={IconButton} variant="ghost">
-                <FaUser />
-              </MenuButton>
-              <MenuList>
-                <MenuItem isDisabled>{user.email}</MenuItem>
-                <MenuDivider />
-                <MenuItem onClick={handleLogout}>Logout</MenuItem>
-              </MenuList>
+            <MenuButton
+              as={Button}
+              variant="ghost"
+              p={4}
+              _hover={{ bg: useColorModeValue("gray.200", "gray.700") }}
+            >
+              <FaUser />
+            </MenuButton>
+            <MenuList>
+              <MenuItem isDisabled>{user.email}</MenuItem>
+              <MenuDivider />
+              <MenuItem onClick={handleLogout}>Logout</MenuItem>
+            </MenuList>
             </Menu>
           ) : (
-            <ChakraLink as={Link} to="/login" fontWeight="medium">
+            <Button
+              as={Link}
+              to="/login"
+              variant="ghost"
+              p={2}
+              fontWeight="medium"
+              _hover={{ bg: useColorModeValue("gray.200", "gray.700") }}
+            >
               Login
-            </ChakraLink>
+            </Button>
           )}
+
         </HStack>
       </Flex>
     </Container>
