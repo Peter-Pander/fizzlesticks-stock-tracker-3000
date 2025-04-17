@@ -61,8 +61,14 @@ const ProductCard = ({ product }) => {
   const [countdownTimer, setCountdownTimer] = useState(null);
   const [countdown, setCountdown] = useState(0);
 
-  // Called after the timer expires.
+  // Called after the timer expires (or on immediate-delete second click).
   const handleDeleteProduct = async (pid) => {
+    // clear any pending timers / UI
+    clearTimeout(deleteTimer);
+    clearInterval(countdownTimer);
+    setPendingDelete(false);
+    setCountdown(0);
+
     const { success, message } = await deleteProduct(pid);
     toast({
       title: success ? 'Success' : 'Error',
@@ -73,19 +79,26 @@ const ProductCard = ({ product }) => {
     });
   };
 
-  // Initiate deletion immediately but show an Undo area with a countdown.
-  const initiateDeleteProduct = (pid) => {
+  // Single function for first‑ and second‑click delete behavior
+  const onDeleteClick = (pid) => {
+    if (pendingDelete) {
+      // second click: immediate deletion
+      handleDeleteProduct(pid);
+      return;
+    }
+
+    // first click: start countdown + Undo UI
     setPendingDelete(true);
     setCountdown(5); // start at 5 seconds
 
-    // Start the deletion timer – after 5s, complete deletion.
+    // schedule real delete in 5s
     const timer = setTimeout(() => {
       clearInterval(countdownInterval);
       handleDeleteProduct(pid);
     }, 5000);
     setDeleteTimer(timer);
 
-    // Start countdown interval to update every second.
+    // update countdown display every second
     const countdownInterval = setInterval(() => {
       setCountdown(prev => (prev > 1 ? prev - 1 : 0));
     }, 1000);
@@ -206,10 +219,9 @@ const ProductCard = ({ product }) => {
           />
           <IconButton
             icon={<DeleteIcon />}
-            onClick={() => initiateDeleteProduct(product._id)}
+            onClick={() => onDeleteClick(product._id)}
             colorScheme='red'
             size='sm'
-            isDisabled={pendingDelete} // disable delete button while pending
           />
           {pendingDelete && (
             <>
