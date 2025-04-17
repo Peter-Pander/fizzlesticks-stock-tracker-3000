@@ -40,10 +40,7 @@ function ChangeLogDropdown() {
 
     fetchLogs();
 
-    const intervalId = setInterval(() => {
-      fetchLogs();
-    }, 5000);
-
+    const intervalId = setInterval(fetchLogs, 5000);
     return () => {
       isMounted = false;
       clearInterval(intervalId);
@@ -68,14 +65,19 @@ function ChangeLogDropdown() {
               month: "short",
             });
 
-            // show "deleted" when newQuantity === 0
+            // determine changeText: deleted, restocked, or sold
+            const before = log.previousQuantity;
+            const after = log.newQuantity;
             let changeText;
-            if (log.newQuantity === 0) {
-              changeText = `deleted (${log.previousQuantity} → 0)`;
-            } else if (log.previousQuantity === 0) {
-              changeText = `restocked: 0 → ${log.newQuantity}`;
+
+            if (after === 0) {
+              changeText = `deleted (was ${before} → 0)`;
+            } else if (after > before) {
+              const added = after - before;
+              changeText = `was ${before}, ${added} restocked → now ${after}`;
             } else {
-              changeText = `${log.previousQuantity} → ${log.newQuantity}`;
+              const sold = before - after;
+              changeText = `was ${before}, ${sold} sold → now ${after}`;
             }
 
             return (

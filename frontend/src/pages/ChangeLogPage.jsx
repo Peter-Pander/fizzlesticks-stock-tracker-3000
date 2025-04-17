@@ -22,9 +22,7 @@ function ChangeLogPage() {
       .catch((err) => console.error("Error fetching full changelog:", err));
   };
 
-  useEffect(() => {
-    fetchLogs();
-  }, []);
+  useEffect(fetchLogs, []);
 
   const handleDeleteConfirmed = () => {
     axios
@@ -34,7 +32,8 @@ function ChangeLogPage() {
         toast.closeAll();
         toast({
           title: "Inventory History Deleted",
-          description: "The full history of inventory changes has been cleared.",
+          description:
+            "The full history of inventory changes has been cleared.",
           status: "warning",
           duration: 3000,
           isClosable: true,
@@ -99,14 +98,19 @@ function ChangeLogPage() {
             month: "long",
           });
 
-          // show “deleted” when newQuantity === 0, restocked when previousQuantity === 0
+          // determine changeText: deleted, restocked, or sold
+          const before = log.previousQuantity;
+          const after = log.newQuantity;
           let changeText;
-          if (log.newQuantity === 0) {
-            changeText = `deleted (${log.previousQuantity} → 0)`;
-          } else if (log.previousQuantity === 0) {
-            changeText = `restocked: 0 → ${log.newQuantity}`;
+
+          if (after === 0) {
+            changeText = `deleted (was ${before} → now 0)`;
+          } else if (after > before) {
+            const added = after - before;
+            changeText = `was ${before}, ${added} restocked → now ${after}`;
           } else {
-            changeText = `${log.previousQuantity} → ${log.newQuantity}`;
+            const sold = before - after;
+            changeText = `was ${before}, ${sold} sold → now ${after}`;
           }
 
           return (
