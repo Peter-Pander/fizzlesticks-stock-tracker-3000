@@ -77,7 +77,7 @@ const HomePage = () => {
             fontWeight="bold"
             color="gray.500"
           >
-            No products found 😢{" "}
+            Nothing in stock right now 😢{" "}
             <Text
               as="span"
               color="blue.500"
@@ -97,7 +97,7 @@ const HomePage = () => {
                 }
               }}
             >
-              Create a product
+              Let's add your first product!
             </Text>
           </Text>
         )}
