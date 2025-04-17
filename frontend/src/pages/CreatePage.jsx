@@ -10,7 +10,7 @@ import {
   useToast,
   VStack,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useProductStore } from "../store/product";
 
 const CreatePage = () => {
@@ -22,6 +22,8 @@ const CreatePage = () => {
   });
   // State for the selected image file
   const [imageFile, setImageFile] = useState(null);
+
+  const fileInputRef = useRef(null); // Ref to reset file input
 
   const toast = useToast();
   const { createProduct } = useProductStore();
@@ -56,6 +58,11 @@ const CreatePage = () => {
     if (success) {
       setNewProduct({ name: "", price: "", quantity: "" });
       setImageFile(null);
+
+      // ✅ Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
     }
   };
 
@@ -101,6 +108,7 @@ const CreatePage = () => {
               accept="image/*"
               name="image"
               onChange={(e) => setImageFile(e.target.files[0])}
+              ref={fileInputRef} // Hook up the ref
             />
             <Input
               placeholder="Quantity"
