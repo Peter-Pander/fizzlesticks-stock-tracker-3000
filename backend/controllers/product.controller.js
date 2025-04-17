@@ -92,6 +92,7 @@ export const updateProduct = async (req, res) => {
       updateData.quantity !== product.quantity
     ) {
       await ChangeLog.create({
+        user: req.user._id,          // <-- associate log with current user
         itemName: product.name,
         previousQuantity: product.quantity,
         newQuantity: updateData.quantity,
