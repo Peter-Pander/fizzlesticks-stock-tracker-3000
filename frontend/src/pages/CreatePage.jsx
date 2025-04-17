@@ -8,16 +8,20 @@ import {
   useToast,
   VStack,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useProductStore } from "../store/product";
 
 const CreatePage = () => {
+  // State for text fields
   const [newProduct, setNewProduct] = useState({
     name: "",
     price: "",
-    image: "",
     quantity: "",
   });
+  // State for the selected image file
+  const [imageFile, setImageFile] = useState(null);
+
+  const fileInputRef = useRef(null); // Ref to reset file input
 
   const toast = useToast();
   const { createProduct } = useProductStore();
@@ -26,13 +30,20 @@ const CreatePage = () => {
   const handleAddProduct = async (e) => {
     e.preventDefault();
 
-    const preparedProduct = {
-      ...newProduct,
-      price: parseFloat(newProduct.price),
-      quantity: parseInt(newProduct.quantity, 10),
-    };
+    // Build FormData payload
+    const formData = new FormData();
+    formData.append("name", newProduct.name);
+    formData.append("price", parseFloat(newProduct.price));
+    formData.append("quantity", parseInt(newProduct.quantity, 10));
 
-    const { success, message } = await createProduct(preparedProduct);
+    if (imageFile) {
+      formData.append("image", imageFile);
+    } else {
+      console.log("⚠️ No image file selected.");
+    }
+
+    // Send FormData to the server (no JSON headers)
+    const { success, message } = await createProduct(formData);
 
     toast({
       title: success ? "Success" : "Error",
@@ -43,12 +54,13 @@ const CreatePage = () => {
 
     // Only clear the form if the product was successfully created
     if (success) {
-      setNewProduct({
-        name: "",
-        price: "",
-        image: "",
-        quantity: "",
-      });
+      setNewProduct({ name: "", price: "", quantity: "" });
+      setImageFile(null);
+
+      // ✅ Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
     }
   };
 
@@ -60,7 +72,7 @@ const CreatePage = () => {
         </Heading>
         <Box
           as="form"
-          w={"full"}
+          w={{ base: "full", md: "container.sm" }}
           bg={useColorModeValue("white", "gray.800")}
           p={6}
           rounded={"lg"}
@@ -86,14 +98,6 @@ const CreatePage = () => {
               }
             />
             <Input
-              placeholder="Image URL"
-              name="image"
-              value={newProduct.image}
-              onChange={(e) =>
-                setNewProduct({ ...newProduct, image: e.target.value })
-              }
-            />
-            <Input
               placeholder="Quantity"
               name="quantity"
               type="number"
@@ -103,6 +107,30 @@ const CreatePage = () => {
                 setNewProduct({ ...newProduct, quantity: e.target.value })
               }
             />
+
+            {/* Styled file input */}
+            <Box textAlign="center" w="full">
+              <Input
+                type="file"
+                accept="image/*"
+                name="image"
+                onChange={(e) => setImageFile(e.target.files[0])}
+                ref={fileInputRef} // Hook up the ref
+                display="none"
+                id="imageUpload"
+              />
+              <Button
+                as="label"
+                htmlFor="imageUpload"
+                variant="outline"
+                colorScheme="blue"
+                w="full"
+                cursor="pointer"
+              >
+                {imageFile ? imageFile.name : "Choose Image"}
+              </Button>
+            </Box>
+
             <Button colorScheme="blue" type="submit" w="full">
               Add Product
             </Button>

@@ -176,7 +176,7 @@ const ProductCard = ({ product }) => {
       bg={bg}
     >
       <Image
-        src={product.image}
+        src={product.imageUrl}
         alt={product.name}
         h={48}
         w='full'
@@ -263,8 +263,8 @@ const ProductCard = ({ product }) => {
               />
               <Input
                 placeholder='Image URL'
-                name='image'
-                value={updatedProduct.image}
+                name='imageUrl'
+                value={updatedProduct.imageUrl}
                 onChange={handleInputChange}
               />
               <Input
