@@ -1,35 +1,50 @@
-// src/App.jsx
-import React, { useEffect } from "react";
+import React, { useEffect, useContext } from "react";
+import { AuthContext } from "./context/AuthContext";
 import { Box, useColorModeValue } from "@chakra-ui/react";
 import { Route, Routes } from "react-router-dom";
 import CreatePage from "./pages/CreatePage";
 import HomePage from "./pages/HomePage";
-import ChangeLogPage from "./pages/ChangeLogPage"; // Import the changelog page
+import ChangeLogPage from "./pages/ChangeLogPage";
+import Login from "./pages/Login.jsx";
+import Register from "./pages/Register.jsx";
 import Navbar from "./components/Navbar";
 import { useProductStore } from "./store/product";
-// NEW: Import the provider from our InventorySettingsContext
+// Import providers for InventorySettings and Auth
 import { InventorySettingsProvider } from "./context/InventorySettingsContext";
+import { AuthProvider } from "./context/AuthContext";
 
 function App() {
-  const products = useProductStore((state) => state.products);
+  return (
+    <AuthProvider>
+      <InventorySettingsProvider>
+        <AppContent />
+      </InventorySettingsProvider>
+    </AuthProvider>
+  );
+}
+
+// This inner component runs inside AuthProvider, so AuthContext is defined here
+function AppContent() {
   const fetchProducts = useProductStore((state) => state.fetchProducts);
+  const { user } = useContext(AuthContext);
 
   useEffect(() => {
-    fetchProducts();
-  }, [fetchProducts]);
+    if (user) {
+      fetchProducts();
+    }
+  }, [fetchProducts, user]);
 
   return (
-    // Wrap the existing app with the InventorySettingsProvider so all components can share settings.
-    <InventorySettingsProvider>
-      <Box minH={"100vh"} bg={useColorModeValue("gray.100", "gray.900")}>
-        <Navbar />
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/create" element={<CreatePage />} />
-          <Route path="/changelog" element={<ChangeLogPage />} /> {/* New route */}
-        </Routes>
-      </Box>
-    </InventorySettingsProvider>
+    <Box minH={"100vh"} bg={useColorModeValue("gray.100", "gray.900")}>
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/create" element={<CreatePage />} />
+        <Route path="/changelog" element={<ChangeLogPage />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/login" element={<Login />} />
+      </Routes>
+    </Box>
   );
 }
 

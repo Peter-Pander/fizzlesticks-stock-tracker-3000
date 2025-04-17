@@ -4,7 +4,8 @@ import path from 'path';
 import { connectDB } from './config/db.js';
 
 import productRoutes from './routes/product.route.js';
-import changelogRoutes from './routes/changelog.route.js'; // Import the changelog route
+import changelogRoutes from './routes/changelog.route.js';
+import authRoutes from './routes/auth.route.js'; // Import the auth routes
 
 dotenv.config();
 
@@ -18,7 +19,8 @@ app.use(express.json()); // Allows us to accept JSON data in the req.body
 
 // Mount routes
 app.use("/api/products", productRoutes);
-app.use("/api/logs", changelogRoutes); // Mount the changelog route
+app.use("/api/logs", changelogRoutes);
+app.use("/api/auth", authRoutes); // Mount the authentication routes
 
 // Serve static frontend in production
 if (process.env.NODE_ENV === "production") {
@@ -29,7 +31,17 @@ if (process.env.NODE_ENV === "production") {
   });
 }
 
-app.listen(PORT, () => {
-  connectDB(); // Make sure this connects to MongoDB
-  console.log("Server started at http://localhost:" + PORT);
-});
+// ✅ Start server *after* DB connection
+const startServer = async () => {
+  try {
+    await connectDB(); // Wait until DB is connected
+    app.listen(PORT, () => {
+      console.log("🚀 Server started at http://localhost:" + PORT);
+    });
+  } catch (error) {
+    console.error("❌ Failed to connect to MongoDB:", error.message);
+    process.exit(1); // Exit with failure code if DB fails
+  }
+};
+
+startServer();

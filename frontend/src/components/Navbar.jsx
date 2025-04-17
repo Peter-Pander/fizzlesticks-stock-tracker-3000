@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext } from "react";
 import {
   Button,
   Container,
@@ -17,22 +17,32 @@ import {
   Checkbox,
   Select,
   useToast,
-  IconButton,
   useColorModeValue,
+  Link as ChakraLink,
 } from "@chakra-ui/react";
-import { Link } from "react-router-dom";
-import { PlusSquareIcon, EditIcon } from "@chakra-ui/icons";
+import { Link, useNavigate } from "react-router-dom";
+import { PlusSquareIcon } from "@chakra-ui/icons";
 import { IoMoon } from "react-icons/io5";
 import { LuSun } from "react-icons/lu";
-import { FaCog } from "react-icons/fa";
+import { FaCog, FaUser } from "react-icons/fa";
 
 // Import your context & the ChangelogDropdown
 import { useInventorySettings } from "../context/InventorySettingsContext";
-import ChangeLogDropdown from "./ChangeLogDropdown"; // <--- Add this
+import ChangeLogDropdown from "./ChangeLogDropdown";
+
+// NEW: import AuthContext
+import { AuthContext } from "../context/AuthContext";
 
 const Navbar = () => {
   const { colorMode, toggleColorMode } = useColorMode();
   const toast = useToast();
+
+  // choose email text color based on light/dark mode
+  const emailColor = useColorModeValue("black", "white");
+
+  // NEW: pull user + logout
+  const { user, logout } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   // Inventory settings from context
   const {
@@ -56,6 +66,12 @@ const Navbar = () => {
     });
   };
 
+  // NEW: logout handler
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
+
   return (
     <Container maxW={"1140px"} px={4}>
       <Flex
@@ -76,14 +92,26 @@ const Navbar = () => {
           <Link to={"/"}> ✨ Fizzlestick's Stock Tracker 3000 🔮✨ </Link>
         </Text>
 
-        {/* --- Right side icons: create, color mode, settings, changelog --- */}
+        {/* --- Right side icons: create, color mode, settings, changelog, user --- */}
         <HStack spacing={2} alignItems={"center"}>
           {/* Create new product button */}
-          <Link to={"/create"}>
-            <Button>
-              <PlusSquareIcon fontSize={20} />
-            </Button>
-          </Link>
+          <Button
+            onClick={() => {
+              if (!user) {
+                toast({
+                  title: "Unauthorized",
+                  description: "You must be logged in to create a product.",
+                  status: "warning",
+                  duration: 3000,
+                  isClosable: true,
+                });
+              } else {
+                navigate("/create");
+              }
+            }}
+          >
+            <PlusSquareIcon fontSize={20} />
+          </Button>
 
           {/* Toggle light/dark mode */}
           <Button onClick={toggleColorMode}>
@@ -129,7 +157,6 @@ const Navbar = () => {
                   </VStack>
                 </MenuItem>
 
-
                 <MenuDivider />
 
                 {/* 2. Show low stock only */}
@@ -171,8 +198,40 @@ const Navbar = () => {
             </MenuList>
           </Menu>
 
-          {/* Changelog icon: separate from gear, use EditIcon */}
+          {/* Changelog icon */}
           <ChangeLogDropdown />
+
+          {/* NEW: User icon menu */}
+          {user ? (
+            <Menu>
+              <MenuButton as={Button}>
+                <FaUser />
+              </MenuButton>
+              <MenuList>
+                {/* email text now black in light / white in dark */}
+                <MenuItem
+                  isDisabled
+                  color={emailColor}
+                  _disabled={{ color: emailColor, opacity: 1 }}
+                >
+                  {user.email}
+                </MenuItem>
+                <MenuDivider />
+                <MenuItem
+                  onClick={handleLogout}
+                  bg="transparent"
+                  _hover={{ bg: "gray.600", color: "white" }}
+                  _active={{ bg: "transparent" }}
+                >
+                  Logout
+                </MenuItem>
+              </MenuList>
+            </Menu>
+          ) : (
+            <Button as={Link} to="/login" fontWeight="medium">
+              Login
+            </Button>
+          )}
         </HStack>
       </Flex>
     </Container>

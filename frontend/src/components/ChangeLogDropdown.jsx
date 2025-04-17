@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import {
   Flex,
   IconButton,
+  Button,
   Menu,
   MenuButton,
   MenuList,
@@ -11,17 +12,25 @@ import {
 } from "@chakra-ui/react";
 import { FaRegClock } from "react-icons/fa6";
 import axios from "axios";
+import { AuthContext } from "../context/AuthContext";
 
 function ChangeLogDropdown() {
+  const { token } = useContext(AuthContext);
   const [logs, setLogs] = useState([]);
 
   useEffect(() => {
+    if (!token) return;
+
     let isMounted = true;
 
     // Define a function to fetch the logs
     const fetchLogs = () => {
       axios
-        .get("/api/logs")
+        .get("/api/logs", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
         .then((res) => {
           if (isMounted) {
             setLogs(res.data);
@@ -30,25 +39,25 @@ function ChangeLogDropdown() {
         .catch((err) => console.error("Error fetching logs:", err));
     };
 
-    // Fetch once immediately
     fetchLogs();
 
-    // Then poll every 5 seconds
     const intervalId = setInterval(() => {
       fetchLogs();
     }, 5000);
 
-    // Cleanup when the component unmounts
     return () => {
       isMounted = false;
       clearInterval(intervalId);
     };
-  }, []);
+  }, [token]);
 
   return (
     <Flex align="center" gap={2}>
       <Menu>
-        <MenuButton as={IconButton} icon={<FaRegClock />} aria-label="Changelog" />
+        {/* Clock icon button now uses a regular Button for consistency */}
+        <MenuButton as={Button} aria-label="Changelog">
+          <FaRegClock />
+        </MenuButton>
         <MenuList>
           <Box px={3} py={2}>
             <Text fontWeight="bold">Recent Inventory Changes</Text>

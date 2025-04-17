@@ -2,15 +2,17 @@ import mongoose from 'mongoose';
 import Product from '../models/product.model.js';
 import ChangeLog from '../models/changelog.model.js';
 
+// GET /api/products
 export const getProducts = async (req, res) => {
   try {
-    const products = await Product.find({});
+    // Only fetch products for the authenticated user
+    const products = await Product.find({ user: req.user._id });
     res.status(200).json({
       success: true,
       data: products,
     });
   } catch (error) {
-    console.log("Error in Get products:", error.message);
+    console.error("Error in Get Products:", error.message);
     res.status(500).json({
       success: false,
       message: "Server Error",
@@ -18,17 +20,25 @@ export const getProducts = async (req, res) => {
   }
 };
 
+// POST /api/products
 export const createProduct = async (req, res) => {
-  const product = req.body; // user will send this data
+  const productData = req.body; // Data sent by the client
 
-  if (!product.name || !product.price || !product.image || product.quantity == null) {
+  // Validate required fields
+  if (
+    !productData.name ||
+    !productData.price ||
+    !productData.image ||
+    productData.quantity == null
+  ) {
     return res.status(400).json({
       success: false,
       message: "Please provide all fields",
     });
   }
 
-  const newProduct = new Product(product);
+  // Attach the authenticated user's ID to the product data
+  const newProduct = new Product({ ...productData, user: req.user._id });
 
   try {
     await newProduct.save();
@@ -37,7 +47,7 @@ export const createProduct = async (req, res) => {
       data: newProduct,
     });
   } catch (error) {
-    console.error("Error in Create product:", error.message);
+    console.error("Error in Create Product:", error.message);
     res.status(500).json({
       success: false,
       message: "Server Error",
@@ -45,10 +55,12 @@ export const createProduct = async (req, res) => {
   }
 };
 
+// PUT /api/products/:id
 export const updateProduct = async (req, res) => {
   const { id } = req.params;
   const updateData = req.body;
 
+  // Validate the product ID
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(404).json({
       success: false,
@@ -57,7 +69,7 @@ export const updateProduct = async (req, res) => {
   }
 
   try {
-    // Fetch the existing product to compare the current quantity
+    // Find product by ID
     const product = await Product.findById(id);
     if (!product) {
       return res.status(404).json({
@@ -66,20 +78,28 @@ export const updateProduct = async (req, res) => {
       });
     }
 
-    // If the updateData includes a quantity and it differs from the current product quantity,
-    // record the changelog entry.
+    // Ensure the product belongs to the authenticated user
+    if (product.user.toString() !== req.user._id.toString()) {
+      return res.status(401).json({
+        success: false,
+        message: "Not authorized to update this product",
+      });
+    }
+
+    // If the update includes a change in quantity, record the change in the ChangeLog
     if (
       updateData.quantity !== undefined &&
       updateData.quantity !== product.quantity
     ) {
       await ChangeLog.create({
+        user: req.user._id,          // <-- associate log with current user
         itemName: product.name,
         previousQuantity: product.quantity,
         newQuantity: updateData.quantity,
       });
     }
 
-    // Apply the updates to the product
+    // Update product fields
     Object.assign(product, updateData);
     const updatedProduct = await product.save();
 
@@ -88,7 +108,7 @@ export const updateProduct = async (req, res) => {
       data: updatedProduct,
     });
   } catch (error) {
-    console.error("Error in Update product:", error.message);
+    console.error("Error in Update Product:", error.message);
     res.status(500).json({
       success: false,
       message: "Server Error",
@@ -96,9 +116,11 @@ export const updateProduct = async (req, res) => {
   }
 };
 
+// DELETE /api/products/:id
 export const deleteProduct = async (req, res) => {
   const { id } = req.params;
 
+  // Validate the product ID
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(404).json({
       success: false,
@@ -107,13 +129,29 @@ export const deleteProduct = async (req, res) => {
   }
 
   try {
+    const product = await Product.findById(id);
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found",
+      });
+    }
+
+    // Ensure the product belongs to the authenticated user
+    if (product.user.toString() !== req.user._id.toString()) {
+      return res.status(401).json({
+        success: false,
+        message: "Not authorized to delete this product",
+      });
+    }
+
     await Product.findByIdAndDelete(id);
     res.status(200).json({
       success: true,
       message: "Product deleted successfully",
     });
   } catch (error) {
-    console.error("Error in deleting product:", error.message);
+    console.error("Error in Deleting Product:", error.message);
     res.status(500).json({
       success: false,
       message: "Server Error",
