@@ -208,7 +208,14 @@ const Navbar = () => {
               <MenuList>
                 <MenuItem isDisabled>{user.email}</MenuItem>
                 <MenuDivider />
-                <MenuItem onClick={handleLogout}>Logout</MenuItem>
+                <MenuItem
+                  onClick={handleLogout}
+                  bg="transparent"
+                  _hover={{ bg: "gray.600", color: "white" }}
+                  _active={{ bg: "transparent" }}
+                >
+                  Logout
+                </MenuItem>
               </MenuList>
             </Menu>
           ) : (
