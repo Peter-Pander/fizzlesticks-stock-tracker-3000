@@ -202,14 +202,9 @@ const Navbar = () => {
           {/* NEW: User icon menu */}
           {user ? (
             <Menu>
-              <MenuButton
-                as={IconButton}
-                icon={<FaUser />}
-                variant="ghost"
-                aria-label="User menu"
-                size="sm"
-                _hover={{ bg: useColorModeValue("gray.200", "gray.700") }}
-              />
+              <MenuButton as={Button}>
+                <FaUser />
+              </MenuButton>
               <MenuList>
                 <MenuItem isDisabled>{user.email}</MenuItem>
                 <MenuDivider />
@@ -217,14 +212,7 @@ const Navbar = () => {
               </MenuList>
             </Menu>
           ) : (
-            <Button
-              as={Link}
-              to="/login"
-              variant="ghost"
-              size="sm"
-              fontWeight="medium"
-              _hover={{ bg: useColorModeValue("gray.200", "gray.700") }}
-            >
+            <Button as={Link} to="/login" fontWeight="medium">
               Login
             </Button>
           )}

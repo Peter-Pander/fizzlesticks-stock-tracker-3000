@@ -2,6 +2,7 @@ import React, { useEffect, useState, useContext } from "react";
 import {
   Flex,
   IconButton,
+  Button,
   Menu,
   MenuButton,
   MenuList,
@@ -53,7 +54,10 @@ function ChangeLogDropdown() {
   return (
     <Flex align="center" gap={2}>
       <Menu>
-        <MenuButton as={IconButton} icon={<FaRegClock />} aria-label="Changelog" />
+        {/* Clock icon button now uses a regular Button for consistency */}
+        <MenuButton as={Button} aria-label="Changelog">
+          <FaRegClock />
+        </MenuButton>
         <MenuList>
           <Box px={3} py={2}>
             <Text fontWeight="bold">Recent Inventory Changes</Text>
