@@ -16,10 +16,10 @@ export const getProducts = async (req, res) => {
       data: products,
     });
   } catch (error) {
-    console.error("Error in Get Products:", error.message);
+    console.error('Error in Get Products:', error); // ← log full error
     res.status(500).json({
       success: false,
-      message: "Server Error",
+      message: 'Server Error',
     });
   }
 };
@@ -37,14 +37,14 @@ export const createProduct = async (req, res) => {
   ) {
     return res.status(400).json({
       success: false,
-      message: "Please provide name, price, quantity, and an image file",
+      message: 'Please provide name, price, quantity, and an image file',
     });
   }
 
   try {
     // 1. Upload the image file to Cloudinary
     const result = await cloudinary.uploader.upload(req.file.path, {
-      folder: "products", // optional folder in your Cloudinary account
+      folder: 'products', // optional folder in your Cloudinary account
     });
 
     // 2. Remove temp file from server
@@ -53,7 +53,7 @@ export const createProduct = async (req, res) => {
     // 3. Create a new Product, storing the Cloudinary URL
     const newProduct = new Product({
       ...productData,
-      imageUrl: result.secure_url,
+      imageUrl: result.secure_url, // ✅ store uploaded image URL
       user: req.user._id,
     });
 
@@ -65,7 +65,7 @@ export const createProduct = async (req, res) => {
       itemName: newProduct.name,
       previousQuantity: 0,
       newQuantity: newProduct.quantity,
-      action: "created",
+      action: 'created',
     });
 
     res.status(201).json({
@@ -73,10 +73,10 @@ export const createProduct = async (req, res) => {
       data: newProduct,
     });
   } catch (error) {
-    console.error("Error in Create Product:", error.message);
+    console.error('Error in Create Product:', error); // ← log full error
     res.status(500).json({
       success: false,
-      message: "Upload failed",
+      message: 'Upload failed',
     });
   }
 };
@@ -90,7 +90,7 @@ export const updateProduct = async (req, res) => {
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(404).json({
       success: false,
-      message: "Invalid Product ID",
+      message: 'Invalid Product ID',
     });
   }
 
@@ -100,7 +100,7 @@ export const updateProduct = async (req, res) => {
     if (!product) {
       return res.status(404).json({
         success: false,
-        message: "Product not found",
+        message: 'Product not found',
       });
     }
 
@@ -108,7 +108,7 @@ export const updateProduct = async (req, res) => {
     if (product.user.toString() !== req.user._id.toString()) {
       return res.status(401).json({
         success: false,
-        message: "Not authorized to update this product",
+        message: 'Not authorized to update this product',
       });
     }
 
@@ -118,8 +118,8 @@ export const updateProduct = async (req, res) => {
       updateData.quantity !== product.quantity
     ) {
       const before = product.quantity;
-      const after = updateData.quantity;
-      const action = after > before ? "restocked" : "sold";
+      const after  = updateData.quantity;
+      const action = after > before ? 'restocked' : 'sold';
 
       await ChangeLog.create({
         user: req.user._id,          // <-- associate log with current user
@@ -139,10 +139,10 @@ export const updateProduct = async (req, res) => {
       data: updatedProduct,
     });
   } catch (error) {
-    console.error("Error in Update Product:", error.message);
+    console.error('Error in Update Product:', error); // ← log full error
     res.status(500).json({
       success: false,
-      message: "Server Error",
+      message: 'Server Error',
     });
   }
 };
@@ -155,7 +155,7 @@ export const deleteProduct = async (req, res) => {
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(404).json({
       success: false,
-      message: "Invalid Product ID",
+      message: 'Invalid Product ID',
     });
   }
 
@@ -164,7 +164,7 @@ export const deleteProduct = async (req, res) => {
     if (!product) {
       return res.status(404).json({
         success: false,
-        message: "Product not found",
+        message: 'Product not found',
       });
     }
 
@@ -172,7 +172,7 @@ export const deleteProduct = async (req, res) => {
     if (product.user.toString() !== req.user._id.toString()) {
       return res.status(401).json({
         success: false,
-        message: "Not authorized to delete this product",
+        message: 'Not authorized to delete this product',
       });
     }
 
@@ -182,19 +182,19 @@ export const deleteProduct = async (req, res) => {
       itemName: product.name,
       previousQuantity: product.quantity,
       newQuantity: 0,
-      action: "deleted",
+      action: 'deleted',
     });
 
     await Product.findByIdAndDelete(id);
     res.status(200).json({
       success: true,
-      message: "Product deleted successfully",
+      message: 'Product deleted successfully',
     });
   } catch (error) {
-    console.error("Error in Deleting Product:", error.message);
+    console.error('Error in Deleting Product:', error); // ← log full error
     res.status(500).json({
       success: false,
-      message: "Server Error",
+      message: 'Server Error',
     });
   }
 };

@@ -35,8 +35,11 @@ const CreatePage = () => {
     formData.append("name", newProduct.name);
     formData.append("price", parseFloat(newProduct.price));
     formData.append("quantity", parseInt(newProduct.quantity, 10));
+
     if (imageFile) {
       formData.append("image", imageFile);
+    } else {
+      console.log("⚠️ No image file selected.");
     }
 
     // Send FormData to the server (no JSON headers)

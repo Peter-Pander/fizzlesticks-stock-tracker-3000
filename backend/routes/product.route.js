@@ -16,14 +16,14 @@ const router = express.Router();
 router.use(requireAuth);
 
 // Set up Multer to handle multipart/form-data
-const upload = multer({ dest: 'uploads/' });
+const upload = multer({ dest: 'uploads/' }); // files temporarily go to /uploads
 
 router.get("/", getProducts);
 
 // Multer parses the file and puts it on req.file, then hands off to createProduct
 router.post(
   "/",
-  upload.single("image"),
+  upload.single("image"), // ✅ Field name must match FormData.append("image", ...)
   createProduct
 );
 
