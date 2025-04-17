@@ -98,14 +98,16 @@ function ChangeLogPage() {
             month: "long",
           });
 
-          // determine changeText: deleted, restocked, or sold
+          // determine changeText based on action: created, deleted, restocked, or sold
           const before = log.previousQuantity;
           const after = log.newQuantity;
           let changeText;
 
-          if (after === 0) {
+          if (log.action === "created") {
+            changeText = `created (was 0 → now ${after})`;
+          } else if (log.action === "deleted") {
             changeText = `deleted (was ${before} → now 0)`;
-          } else if (after > before) {
+          } else if (log.action === "restocked") {
             const added = after - before;
             changeText = `was ${before}, ${added} restocked → now ${after}`;
           } else {

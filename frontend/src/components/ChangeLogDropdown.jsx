@@ -65,14 +65,16 @@ function ChangeLogDropdown() {
               month: "short",
             });
 
-            // determine changeText: deleted, restocked, or sold
+            // determine changeText: created, deleted, restocked, or sold
             const before = log.previousQuantity;
             const after = log.newQuantity;
             let changeText;
 
-            if (after === 0) {
+            if (log.action === "created") {
+              changeText = `created (was 0 → now ${after})`;
+            } else if (log.action === "deleted" || after === 0) {
               changeText = `deleted (was ${before} → 0)`;
-            } else if (after > before) {
+            } else if (log.action === "restocked" || after > before) {
               const added = after - before;
               changeText = `was ${before}, ${added} restocked → now ${after}`;
             } else {

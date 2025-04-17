@@ -42,6 +42,16 @@ export const createProduct = async (req, res) => {
 
   try {
     await newProduct.save();
+
+    // Log creation event
+    await ChangeLog.create({
+      user: req.user._id,
+      itemName: newProduct.name,
+      previousQuantity: 0,
+      newQuantity: newProduct.quantity,
+      action: "created",
+    });
+
     res.status(201).json({
       success: true,
       data: newProduct,
@@ -91,11 +101,16 @@ export const updateProduct = async (req, res) => {
       updateData.quantity !== undefined &&
       updateData.quantity !== product.quantity
     ) {
+      const before = product.quantity;
+      const after  = updateData.quantity;
+      const action = after > before ? "restocked" : "sold";
+
       await ChangeLog.create({
         user: req.user._id,          // <-- associate log with current user
         itemName: product.name,
-        previousQuantity: product.quantity,
-        newQuantity: updateData.quantity,
+        previousQuantity: before,
+        newQuantity: after,
+        action,
       });
     }
 
@@ -151,6 +166,7 @@ export const deleteProduct = async (req, res) => {
       itemName: product.name,
       previousQuantity: product.quantity,
       newQuantity: 0,
+      action: "deleted",
     });
 
     await Product.findByIdAndDelete(id);
