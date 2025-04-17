@@ -1,3 +1,5 @@
+// client/src/pages/CreatePage.jsx
+
 import {
   Box,
   Button,
@@ -12,12 +14,14 @@ import { useState } from "react";
 import { useProductStore } from "../store/product";
 
 const CreatePage = () => {
+  // State for text fields
   const [newProduct, setNewProduct] = useState({
     name: "",
     price: "",
-    image: "",
     quantity: "",
   });
+  // State for the selected image file
+  const [imageFile, setImageFile] = useState(null);
 
   const toast = useToast();
   const { createProduct } = useProductStore();
@@ -26,13 +30,17 @@ const CreatePage = () => {
   const handleAddProduct = async (e) => {
     e.preventDefault();
 
-    const preparedProduct = {
-      ...newProduct,
-      price: parseFloat(newProduct.price),
-      quantity: parseInt(newProduct.quantity, 10),
-    };
+    // Build FormData payload
+    const formData = new FormData();
+    formData.append("name", newProduct.name);
+    formData.append("price", parseFloat(newProduct.price));
+    formData.append("quantity", parseInt(newProduct.quantity, 10));
+    if (imageFile) {
+      formData.append("image", imageFile);
+    }
 
-    const { success, message } = await createProduct(preparedProduct);
+    // Send FormData to the server (no JSON headers)
+    const { success, message } = await createProduct(formData);
 
     toast({
       title: success ? "Success" : "Error",
@@ -43,12 +51,8 @@ const CreatePage = () => {
 
     // Only clear the form if the product was successfully created
     if (success) {
-      setNewProduct({
-        name: "",
-        price: "",
-        image: "",
-        quantity: "",
-      });
+      setNewProduct({ name: "", price: "", quantity: "" });
+      setImageFile(null);
     }
   };
 
@@ -60,7 +64,10 @@ const CreatePage = () => {
         </Heading>
         <Box
           as="form"
-          w={"full"}
+          w={{
+            base: "full",
+            md: "container.sm",
+          }}
           bg={useColorModeValue("white", "gray.800")}
           p={6}
           rounded={"lg"}
@@ -85,13 +92,12 @@ const CreatePage = () => {
                 setNewProduct({ ...newProduct, price: e.target.value })
               }
             />
+            {/* File input for image upload */}
             <Input
-              placeholder="Image URL"
+              type="file"
+              accept="image/*"
               name="image"
-              value={newProduct.image}
-              onChange={(e) =>
-                setNewProduct({ ...newProduct, image: e.target.value })
-              }
+              onChange={(e) => setImageFile(e.target.files[0])}
             />
             <Input
               placeholder="Quantity"
