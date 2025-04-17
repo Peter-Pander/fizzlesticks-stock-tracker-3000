@@ -1,3 +1,7 @@
-// config/cloudinary.js
-const cloudinary = require('cloudinary').v2;
-module.exports = cloudinary;
+// backend/config/cloudinary.js
+import { v2 as cloudinary } from 'cloudinary';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+export default cloudinary;
