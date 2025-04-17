@@ -1,13 +1,15 @@
-import express from 'express';
+// backend/server.js
+
 import dotenv from 'dotenv';
+dotenv.config();    // ← loads .env (including CLOUDINARY_URL) before anything else
+
+import express from 'express';
 import path from 'path';
 import { connectDB } from './config/db.js';
 
 import productRoutes from './routes/product.route.js';
 import changelogRoutes from './routes/changelog.route.js';
 import authRoutes from './routes/auth.route.js'; // Import the auth routes
-
-dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
