@@ -73,7 +73,7 @@ function ChangeLogDropdown() {
             if (log.action === "created") {
               changeText = `created (was 0 → now ${after})`;
             } else if (log.action === "deleted" || after === 0) {
-              changeText = `deleted (was ${before} → 0)`;
+              changeText = `deleted (was ${before} → now 0)`;
             } else if (log.action === "restocked" || after > before) {
               const added = after - before;
               changeText = `was ${before}, ${added} restocked → now ${after}`;
