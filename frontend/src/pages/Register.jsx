@@ -1,3 +1,4 @@
+// src/pages/Register.jsx
 import {
   Box,
   Button,
@@ -8,6 +9,7 @@ import {
   FormControl,
   FormLabel,
   Link as ChakraLink,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import { useState, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
@@ -56,12 +58,17 @@ const Register = () => {
     }
   };
 
+  // adapt card & input bg to light/dark
+  const formBg = useColorModeValue("white", "gray.800");
+  const inputBg = useColorModeValue("gray.50", "gray.700");
+  const linkColor = useColorModeValue("blue.500", "blue.300");
+
   return (
     <Box minH="100vh" display="flex" alignItems="center" justifyContent="center">
       <Box
         as="form"
         onSubmit={submitHandler}
-        bg="white"
+        bg={formBg}
         p={8}
         rounded="md"
         boxShadow="md"
@@ -80,6 +87,7 @@ const Register = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              bg={inputBg}
             />
           </FormControl>
 
@@ -90,6 +98,7 @@ const Register = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              bg={inputBg}
             />
           </FormControl>
 
@@ -100,16 +109,22 @@ const Register = () => {
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
+              bg={inputBg}
             />
           </FormControl>
 
-          <Button colorScheme="blue" type="submit" width="full">
+          <Button
+            colorScheme="blue"
+            variant="solid"
+            type="submit"
+            width="full"
+          >
             Register
           </Button>
 
           <Text fontSize="sm" textAlign="center">
             Already have an account?{" "}
-            <ChakraLink as={Link} to="/login" color="blue.500">
+            <ChakraLink as={Link} to="/login" color={linkColor}>
               Log in
             </ChakraLink>
           </Text>
