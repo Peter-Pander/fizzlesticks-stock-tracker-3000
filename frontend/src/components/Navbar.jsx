@@ -17,7 +17,6 @@ import {
   Checkbox,
   Select,
   useToast,
-  IconButton,
   useColorModeValue,
   Link as ChakraLink,
 } from "@chakra-ui/react";
@@ -37,6 +36,9 @@ import { AuthContext } from "../context/AuthContext";
 const Navbar = () => {
   const { colorMode, toggleColorMode } = useColorMode();
   const toast = useToast();
+
+  // choose email text color based on light/dark mode
+  const emailColor = useColorModeValue("black", "white");
 
   // NEW: pull user + logout
   const { user, logout } = useContext(AuthContext);
@@ -206,7 +208,14 @@ const Navbar = () => {
                 <FaUser />
               </MenuButton>
               <MenuList>
-                <MenuItem isDisabled>{user.email}</MenuItem>
+                {/* email text now black in light / white in dark */}
+                <MenuItem
+                  isDisabled
+                  color={emailColor}
+                  _disabled={{ color: emailColor, opacity: 1 }}
+                >
+                  {user.email}
+                </MenuItem>
                 <MenuDivider />
                 <MenuItem
                   onClick={handleLogout}
