@@ -145,6 +145,14 @@ export const deleteProduct = async (req, res) => {
       });
     }
 
+    // Log deletion as quantity -> 0
+    await ChangeLog.create({
+      user: req.user._id,          // <-- associate log with current user
+      itemName: product.name,
+      previousQuantity: product.quantity,
+      newQuantity: 0,
+    });
+
     await Product.findByIdAndDelete(id);
     res.status(200).json({
       success: true,

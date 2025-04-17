@@ -98,10 +98,16 @@ function ChangeLogPage() {
             day: "2-digit",
             month: "long",
           });
-          const changeText =
-            log.previousQuantity === 0
-              ? `restocked: 0 → ${log.newQuantity}`
-              : `${log.previousQuantity} → ${log.newQuantity}`;
+
+          // show “deleted” when newQuantity === 0, restocked when previousQuantity === 0
+          let changeText;
+          if (log.newQuantity === 0) {
+            changeText = `deleted (${log.previousQuantity} → 0)`;
+          } else if (log.previousQuantity === 0) {
+            changeText = `restocked: 0 → ${log.newQuantity}`;
+          } else {
+            changeText = `${log.previousQuantity} → ${log.newQuantity}`;
+          }
 
           return (
             <Box key={log._id}>

@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
 import {
   Flex,
-  IconButton,
   Button,
   Menu,
   MenuButton,
@@ -68,10 +67,16 @@ function ChangeLogDropdown() {
               day: "2-digit",
               month: "short",
             });
-            const changeText =
-              log.previousQuantity === 0
-                ? `restocked: 0 → ${log.newQuantity}`
-                : `${log.previousQuantity} → ${log.newQuantity}`;
+
+            // show "deleted" when newQuantity === 0
+            let changeText;
+            if (log.newQuantity === 0) {
+              changeText = `deleted (${log.previousQuantity} → 0)`;
+            } else if (log.previousQuantity === 0) {
+              changeText = `restocked: 0 → ${log.newQuantity}`;
+            } else {
+              changeText = `${log.previousQuantity} → ${log.newQuantity}`;
+            }
 
             return (
               <MenuItem
