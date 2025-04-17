@@ -1,5 +1,3 @@
-// client/src/pages/CreatePage.jsx
-
 import {
   Box,
   Button,
@@ -74,10 +72,7 @@ const CreatePage = () => {
         </Heading>
         <Box
           as="form"
-          w={{
-            base: "full",
-            md: "container.sm",
-          }}
+          w={{ base: "full", md: "container.sm" }}
           bg={useColorModeValue("white", "gray.800")}
           p={6}
           rounded={"lg"}
@@ -102,14 +97,6 @@ const CreatePage = () => {
                 setNewProduct({ ...newProduct, price: e.target.value })
               }
             />
-            {/* File input for image upload */}
-            <Input
-              type="file"
-              accept="image/*"
-              name="image"
-              onChange={(e) => setImageFile(e.target.files[0])}
-              ref={fileInputRef} // Hook up the ref
-            />
             <Input
               placeholder="Quantity"
               name="quantity"
@@ -120,6 +107,30 @@ const CreatePage = () => {
                 setNewProduct({ ...newProduct, quantity: e.target.value })
               }
             />
+
+            {/* Styled file input */}
+            <Box textAlign="center" w="full">
+              <Input
+                type="file"
+                accept="image/*"
+                name="image"
+                onChange={(e) => setImageFile(e.target.files[0])}
+                ref={fileInputRef} // Hook up the ref
+                display="none"
+                id="imageUpload"
+              />
+              <Button
+                as="label"
+                htmlFor="imageUpload"
+                variant="outline"
+                colorScheme="blue"
+                w="full"
+                cursor="pointer"
+              >
+                {imageFile ? imageFile.name : "Choose Image"}
+              </Button>
+            </Box>
+
             <Button colorScheme="blue" type="submit" w="full">
               Add Product
             </Button>
