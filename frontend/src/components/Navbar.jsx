@@ -21,7 +21,7 @@ import {
   Link as ChakraLink,
 } from "@chakra-ui/react";
 import { Link, useNavigate } from "react-router-dom";
-import { PlusSquareIcon } from "@chakra-ui/icons";
+import { PlusSquareIcon, CheckIcon } from "@chakra-ui/icons";
 import { IoMoon } from "react-icons/io5";
 import { LuSun } from "react-icons/lu";
 import { FaCog, FaUser } from "react-icons/fa";
@@ -52,6 +52,7 @@ const Navbar = () => {
     setSortOrder,
     lowStockThreshold,
     setLowStockThreshold,
+    saveLowStockThreshold,
   } = useInventorySettings();
 
   // Helper to confirm threshold
@@ -142,18 +143,43 @@ const Navbar = () => {
                     <Text fontSize="md" alignSelf="flex-start">
                       Low Stock Threshold
                     </Text>
-                    <Input
-                      placeholder="Threshold"
-                      type="number"
-                      value={lowStockThreshold}
-                      onChange={(e) => setLowStockThreshold(e.target.value)}
-                      onClick={(e) => e.stopPropagation()}
-                      onFocus={(e) => e.stopPropagation()}
-                      width="full"
-                      bg="transparent"
-                      _focus={{ bg: "transparent", boxShadow: "none" }}
-                      _active={{ bg: "transparent" }}
-                    />
+                    <Flex gap={2} w="full">
+                      <Input
+                        placeholder="Threshold"
+                        type="number"
+                        value={lowStockThreshold}
+                        onChange={(e) => setLowStockThreshold(e.target.value)}
+                        onClick={(e) => e.stopPropagation()}
+                        onFocus={(e) => e.stopPropagation()}
+                        width="full"
+                        bg="transparent"
+                        _focus={{ bg: "transparent", boxShadow: "none" }}
+                        _active={{ bg: "transparent" }}
+                      />
+                      <Button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          saveLowStockThreshold(); // ✅ save to localStorage
+                          toast({
+                            title: "Threshold saved",
+                            description: `Saved as ${lowStockThreshold}`,
+                            status: "success",
+                            duration: 2000,
+                            isClosable: true,
+                          });
+                        }}
+                        size="sm"
+                        variant="outline"
+                        h="38px"
+                        minW="38px"
+                        border="1px"
+                        borderColor="black"
+                        _hover={{ borderColor: "black", bg: "transparent" }}
+                        _focus={{ borderColor: "black", boxShadow: "none" }}
+                      >
+                        <CheckIcon color="black" />
+                      </Button>
+                    </Flex>
                   </VStack>
                 </MenuItem>
 

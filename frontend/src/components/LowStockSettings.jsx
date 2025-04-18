@@ -4,27 +4,32 @@ import {
   NumberInput,
   NumberInputField,
   HStack,
-  IconButton
+  IconButton,
 } from "@chakra-ui/react";
 import { CheckIcon } from "@chakra-ui/icons";
 import { useState, useEffect } from "react";
-import { useProductStore } from "../store/product";
+import { useInventorySettings } from "../context/InventorySettingsContext"; // ✅ updated
 
 const LowStockSettings = () => {
-  const currentThreshold = useProductStore((state) => state.lowStockThreshold);
-  const setThreshold = useProductStore((state) => state.setLowStockThreshold);
-  const [localValue, setLocalValue] = useState(currentThreshold);
+  const {
+    lowStockThreshold,
+    setLowStockThreshold,
+    saveLowStockThreshold,
+  } = useInventorySettings(); // ✅ using context now
+
+  const [localValue, setLocalValue] = useState(lowStockThreshold);
 
   useEffect(() => {
-    setLocalValue(currentThreshold);
-  }, [currentThreshold]);
+    setLocalValue(lowStockThreshold);
+  }, [lowStockThreshold]);
 
   const handleApply = () => {
     const parsed = parseInt(localValue, 10);
     if (!isNaN(parsed)) {
-      setThreshold(parsed);
+      setLowStockThreshold(parsed); // ✅ update context
+      saveLowStockThreshold();     // ✅ persist it
     } else {
-      setLocalValue(currentThreshold);
+      setLocalValue(lowStockThreshold); // reset to current
     }
   };
 
