@@ -159,7 +159,7 @@ const Navbar = () => {
                       <Button
                         onClick={(e) => {
                           e.stopPropagation();
-                          saveLowStockThreshold(); // ✅ save to localStorage
+                          saveLowStockThreshold(); // Save to localStorage
                           toast({
                             title: "Threshold saved",
                             description: `Saved as ${lowStockThreshold}`,
@@ -172,12 +172,16 @@ const Navbar = () => {
                         variant="outline"
                         h="38px"
                         minW="38px"
-                        border="1px"
-                        borderColor="black"
-                        _hover={{ borderColor: "black", bg: "transparent" }}
-                        _focus={{ borderColor: "black", boxShadow: "none" }}
+                        px={2}
+                        borderRadius="md"
+                        borderColor={useColorModeValue("gray.300", "gray.600")} // ✅ updated styling
+                        _hover={{
+                          bg: useColorModeValue("gray.100", "gray.700"),
+                          borderColor: useColorModeValue("gray.400", "gray.500"),
+                        }}
+                        _focus={{ boxShadow: "none" }}
                       >
-                        <CheckIcon color="black" />
+                        <CheckIcon color={useColorModeValue("gray.700", "gray.100")} />
                       </Button>
                     </Flex>
                   </VStack>
