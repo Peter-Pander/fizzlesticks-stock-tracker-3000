@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import {
   Box,
   Heading,
@@ -10,23 +10,39 @@ import {
   Text,
 } from "@chakra-ui/react";
 import axios from "axios";
+import { AuthContext } from "../context/AuthContext";
 
 function ChangeLogPage() {
   const [logs, setLogs] = useState([]);
   const toast = useToast();
+  const { token } = useContext(AuthContext);
+
+  if (!token) return <Text>Loading...</Text>;
 
   const fetchLogs = () => {
+    if (!token) return; // skip if token not available yet
+
     axios
-      .get("/api/logs")
+      .get("/api/logs", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
       .then((res) => setLogs(res.data))
       .catch((err) => console.error("Error fetching full changelog:", err));
   };
 
-  useEffect(fetchLogs, []);
+  useEffect(fetchLogs, [token]); // re-run when token becomes available
 
   const handleDeleteConfirmed = () => {
+    if (!token) return; // skip if token not available
+
     axios
-      .delete("/api/logs")
+      .delete("/api/logs", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
       .then(() => {
         setLogs([]);
         toast.closeAll();
