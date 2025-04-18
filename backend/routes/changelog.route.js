@@ -24,7 +24,7 @@ router.get("/", async (req, res) => {
 // DELETE all logs
 router.delete("/", async (req, res) => {
   try {
-    await ChangeLog.deleteMany({});
+    await ChangeLog.deleteMany({ user: req.user._id }); // only this user’s logs
     res.json({ message: "All logs have been deleted." });
   } catch (error) {
     res.status(500).json({ error: error.message });
