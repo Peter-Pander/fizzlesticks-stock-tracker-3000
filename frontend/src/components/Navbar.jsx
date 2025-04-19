@@ -188,12 +188,11 @@ const Navbar = () => {
                 </Text>
 
                 {/* 1. Low Stock Threshold */}
-                <MenuItem
+                <Box
                   onClick={(e) => e.stopPropagation()}
+                  px={4}
+                  py={2}
                   _hover={{ bg: "transparent" }}
-                  _focus={{ bg: "transparent" }}
-                  _active={{ bg: "transparent" }}
-                  tabIndex={-1}
                 >
                   <VStack spacing={2} w="full">
                     <Text fontSize="md" alignSelf="flex-start">
@@ -251,7 +250,7 @@ const Navbar = () => {
                       </Button>
                     </Flex>
                   </VStack>
-                </MenuItem>
+                </Box>
 
                 <MenuDivider />
 
@@ -296,9 +295,11 @@ const Navbar = () => {
                 <MenuDivider />
 
                 {/* 4. Currency Label */}
-                <MenuItem
-                  onClick={(e) => e.stopPropagation()}                  _hover={{ bg: "transparent" }}
-                  tabIndex={-1}
+                <Box
+                  onClick={(e) => e.stopPropagation()}
+                  px={4}
+                  py={2}
+                  _hover={{ bg: "transparent" }}
                 >
                   <VStack spacing={2} w="full">
                     <Flex align="center" gap={1} alignSelf="flex-start">
@@ -361,7 +362,7 @@ const Navbar = () => {
                       </Button>
                     </Flex>
                   </VStack>
-                </MenuItem>
+                </Box>
               </MenuGroup>
             </MenuList>
           </Menu>
