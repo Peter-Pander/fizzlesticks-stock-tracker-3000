@@ -5,6 +5,7 @@ import {
   Flex,
   HStack,
   Text,
+  useToast,
   useColorMode,
   Input,
   VStack,
@@ -16,7 +17,6 @@ import {
   MenuItem,
   Checkbox,
   Select,
-  useToast,
   useColorModeValue,
   Link as ChakraLink,
 } from "@chakra-ui/react";
@@ -26,7 +26,7 @@ import { IoMoon } from "react-icons/io5";
 import { LuSun } from "react-icons/lu";
 import { FaCog, FaUser } from "react-icons/fa";
 
-// Import your context & the ChangelogDropdown
+// Import your contexts & the ChangelogDropdown
 import { useInventorySettings } from "../context/InventorySettingsContext";
 import ChangeLogDropdown from "./ChangeLogDropdown";
 
@@ -36,13 +36,11 @@ import { AuthContext } from "../context/AuthContext";
 const Navbar = () => {
   const { colorMode, toggleColorMode } = useColorMode();
   const toast = useToast();
-
-  // choose email text color based on light/dark mode
   const emailColor = useColorModeValue("black", "white");
+  const navigate = useNavigate();
 
   // NEW: pull user + logout
   const { user, logout } = useContext(AuthContext);
-  const navigate = useNavigate();
 
   // Inventory settings from context
   const {
@@ -53,6 +51,11 @@ const Navbar = () => {
     lowStockThreshold,
     setLowStockThreshold,
     saveLowStockThreshold,
+
+    // currency settings
+    preferredCurrency,
+    setPreferredCurrency,
+    savePreferredCurrency,
   } = useInventorySettings();
 
   // Helper to confirm threshold
@@ -61,6 +64,18 @@ const Navbar = () => {
     toast({
       title: "Threshold updated",
       description: `Low stock threshold is now ${lowStockThreshold}`,
+      status: "success",
+      duration: 2000,
+      isClosable: true,
+    });
+  };
+
+  // helper to confirm currency change
+  const confirmCurrencyChange = (e) => {
+    e.stopPropagation();
+    toast({
+      title: "Currency updated",
+      description: `Currency label set to "${preferredCurrency}"`,
       status: "success",
       duration: 2000,
       isClosable: true,
@@ -159,14 +174,8 @@ const Navbar = () => {
                       <Button
                         onClick={(e) => {
                           e.stopPropagation();
-                          saveLowStockThreshold(); // Save to localStorage
-                          toast({
-                            title: "Threshold saved",
-                            description: `Saved as ${lowStockThreshold}`,
-                            status: "success",
-                            duration: 2000,
-                            isClosable: true,
-                          });
+                          saveLowStockThreshold();
+                          confirmThresholdChange(e);
                         }}
                         size="sm"
                         variant="outline"
@@ -174,14 +183,22 @@ const Navbar = () => {
                         minW="38px"
                         px={2}
                         borderRadius="md"
-                        borderColor={useColorModeValue("gray.300", "gray.600")} // ✅ updated styling
+                        borderColor={useColorModeValue(
+                          "gray.300",
+                          "gray.600"
+                        )}
                         _hover={{
                           bg: useColorModeValue("gray.100", "gray.700"),
-                          borderColor: useColorModeValue("gray.400", "gray.500"),
+                          borderColor: useColorModeValue(
+                            "gray.400",
+                            "gray.500"
+                          ),
                         }}
                         _focus={{ boxShadow: "none" }}
                       >
-                        <CheckIcon color={useColorModeValue("gray.700", "gray.100")} />
+                        <CheckIcon
+                          color={useColorModeValue("gray.700", "gray.100")}
+                        />
                       </Button>
                     </Flex>
                   </VStack>
@@ -197,7 +214,9 @@ const Navbar = () => {
                 >
                   <Checkbox
                     isChecked={showLowStockOnly}
-                    onChange={(e) => setShowLowStockOnly(e.target.checked)}
+                    onChange={(e) =>
+                      setShowLowStockOnly(e.target.checked)
+                    }
                   >
                     Show low stock only
                   </Checkbox>
@@ -223,6 +242,65 @@ const Navbar = () => {
                       Sort by Quantity: High → Low
                     </option>
                   </Select>
+                </MenuItem>
+
+                <MenuDivider />
+
+                {/* 4. Currency Label */}
+                <MenuItem
+                  onClick={(e) => e.stopPropagation()}
+                  _hover={{ bg: "transparent" }}
+                  tabIndex={-1}
+                >
+                  <VStack spacing={2} w="full">
+                    <Text fontSize="md" alignSelf="flex-start">
+                      Currency Label
+                    </Text>
+                    <Flex gap={2} w="full">
+                      <Input
+                        placeholder="e.g. $, €, chips"
+                        value={preferredCurrency}
+                        onChange={(e) =>
+                          setPreferredCurrency(e.target.value)
+                        }
+                        onClick={(e) => e.stopPropagation()}
+                        onFocus={(e) => e.stopPropagation()}
+                        width="full"
+                        bg="transparent"
+                        _focus={{ bg: "transparent", boxShadow: "none" }}
+                        _active={{ bg: "transparent" }}
+                      />
+                      <Button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          savePreferredCurrency();
+                          confirmCurrencyChange(e);
+                        }}
+                        size="sm"
+                        variant="outline"
+                        h="38px"
+                        minW="38px"
+                        px={2}
+                        borderRadius="md"
+                        borderColor={useColorModeValue(
+                          "gray.300",
+                          "gray.600"
+                        )}
+                        _hover={{
+                          bg: useColorModeValue("gray.100", "gray.700"),
+                          borderColor: useColorModeValue(
+                            "gray.400",
+                            "gray.500"
+                          ),
+                        }}
+                        _focus={{ boxShadow: "none" }}
+                      >
+                        <CheckIcon
+                          color={useColorModeValue("gray.700", "gray.100")}
+                        />
+                      </Button>
+                    </Flex>
+                  </VStack>
                 </MenuItem>
               </MenuGroup>
             </MenuList>

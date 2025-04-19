@@ -11,11 +11,15 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
+// import your inventory settings context
+import { useInventorySettings } from "../context/InventorySettingsContext";
 
 function ChangeLogPage() {
   const [logs, setLogs] = useState([]);
   const toast = useToast();
   const { token } = useContext(AuthContext);
+  // pull preferredCurrency from context
+  const { preferredCurrency } = useInventorySettings();
 
   if (!token) return <Text>Loading...</Text>;
 
@@ -123,7 +127,7 @@ function ChangeLogPage() {
 
           // Handle price change
           } else if (log.action === "new price") {
-            changeText = `${log.itemName} was ${log.oldValue} gold, new price → now ${log.newValue} gold`;
+            changeText = `was ${log.oldValue} ${preferredCurrency}, new price → now ${log.newValue} ${preferredCurrency}`;
 
           // Handle quantity-related changes: created, deleted, restocked, or sold
           } else {
@@ -131,15 +135,15 @@ function ChangeLogPage() {
             const after = log.newQuantity;
 
             if (log.action === "created") {
-              changeText = `created (was 0 → now ${after} gold)`;
+              changeText = `created (was 0 → now ${after} ${preferredCurrency})`;
             } else if (log.action === "deleted") {
-              changeText = `deleted (was ${before} gold → now 0 gold)`;
+              changeText = `deleted (was ${before} items → now 0 items)`;
             } else if (log.action === "restocked") {
               const added = after - before;
-              changeText = `was ${before} gold, ${added} restocked → now ${after} gold`;
+              changeText = `was ${before} items, ${added} restocked → now ${after} items`;
             } else {
               const sold = before - after;
-              changeText = `was ${before} gold, ${sold} sold → now ${after} gold`;
+              changeText = `was ${before} items, ${sold} sold → now ${after} items`;
             }
           }
 

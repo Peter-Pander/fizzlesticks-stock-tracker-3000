@@ -15,6 +15,15 @@ export const InventorySettingsProvider = ({ children }) => {
     localStorage.setItem("lowStockThreshold", lowStockThreshold);
   };
 
+  // Load initial currency label from localStorage or default to "gold"
+  const initialCurrency = localStorage.getItem("preferredCurrency") || "gold";
+  const [preferredCurrency, setPreferredCurrency] = useState(initialCurrency);
+
+  // Save preferred currency to localStorage
+  const savePreferredCurrency = () => {
+    localStorage.setItem("preferredCurrency", preferredCurrency);
+  };
+
   return (
     <InventorySettingsContext.Provider
       value={{
@@ -25,6 +34,11 @@ export const InventorySettingsProvider = ({ children }) => {
         lowStockThreshold,
         setLowStockThreshold,
         saveLowStockThreshold,
+
+        // new currency settings
+        preferredCurrency,
+        setPreferredCurrency,
+        savePreferredCurrency,
       }}
     >
       {children}

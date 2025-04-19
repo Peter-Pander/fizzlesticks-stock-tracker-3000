@@ -23,6 +23,8 @@ import { EditIcon, DeleteIcon } from '@chakra-ui/icons';
 import { FaPlus, FaMinus, FaUndo } from 'react-icons/fa';
 import { useProductStore } from '../store/product';
 import { useState } from 'react';
+// import your inventory settings context
+import { useInventorySettings } from "../context/InventorySettingsContext";
 
 const ProductCard = ({ product }) => {
   const textColor = useColorModeValue("gray.600", "gray.200");
@@ -32,6 +34,8 @@ const ProductCard = ({ product }) => {
 
   const { deleteProduct, updateProduct } = useProductStore();
   const toast = useToast();
+  // pull preferredCurrency from context
+  const { preferredCurrency } = useInventorySettings();
 
   const {
     isOpen: isEditOpen,
@@ -189,7 +193,7 @@ const ProductCard = ({ product }) => {
         </Heading>
 
         <Text fontWeight='bold' fontSize='xl' color={textColor} mb={2}>
-          {product.price} gold
+          {product.price} {preferredCurrency}
         </Text>
 
         <Text fontSize='md' color={textColor} mb={4}>

@@ -12,9 +12,12 @@ import {
 import { FaRegClock } from "react-icons/fa6";
 import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
+// import inventory settings context
+import { useInventorySettings } from "../context/InventorySettingsContext";
 
 function ChangeLogDropdown() {
   const { token } = useContext(AuthContext);
+  const { preferredCurrency } = useInventorySettings();
   const [logs, setLogs] = useState([]);
 
   useEffect(() => {
@@ -73,7 +76,7 @@ function ChangeLogDropdown() {
 
             // Handle price change
             } else if (log.action === "new price") {
-              changeText = `${log.itemName} was ${log.oldValue} gold, new price → now ${log.newValue} gold`;
+              changeText = `${log.itemName} was ${log.oldValue} ${preferredCurrency}, new price → now ${log.newValue} ${preferredCurrency}`;
 
             // Determine quantity-related changes: created, deleted, restocked, or sold
             } else {
@@ -81,15 +84,15 @@ function ChangeLogDropdown() {
               const after = log.newQuantity;
 
               if (log.action === "created") {
-                changeText = `created (was 0 → now ${after} gold)`;
+                changeText = `created (was 0 → now ${after} ${preferredCurrency})`;
               } else if (log.action === "deleted" || after === 0) {
-                changeText = `deleted (was ${before} gold → now 0 gold)`;
+                changeText = `deleted (was ${before} items → now 0 items)`;
               } else if (log.action === "restocked" || after > before) {
                 const added = after - before;
-                changeText = `was ${before} gold, ${added} restocked → now ${after} gold`;
+                changeText = `was ${before} ${preferredCurrency}, ${added} restocked → now ${after} items`;
               } else {
                 const sold = before - after;
-                changeText = `was ${before} gold, ${sold} sold → now ${after} gold`;
+                changeText = `was ${before} ${preferredCurrency}, ${sold} sold → now ${after} items`;
               }
             }
 
