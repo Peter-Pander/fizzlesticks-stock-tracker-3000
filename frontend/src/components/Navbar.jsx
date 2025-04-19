@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState, useEffect, useRef } from "react";
 import {
   Button,
   Container,
@@ -18,9 +18,9 @@ import {
   Checkbox,
   Select,
   useColorModeValue,
-  Link as ChakraLink,
   Tooltip,
-  Box
+  Box,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { Link, useNavigate } from "react-router-dom";
 import { PlusSquareIcon, CheckIcon } from "@chakra-ui/icons";
@@ -60,12 +60,46 @@ const Navbar = () => {
     savePreferredCurrency,
   } = useInventorySettings();
 
+  // track settings-dropdown open/close
+  const {
+    isOpen: isSettingsOpen,
+    onOpen: onSettingsOpen,
+    onClose: onSettingsClose,
+  } = useDisclosure();
+
+  // LOCAL INPUT STATES for threshold & currency, so we can reset them on-open
+  const [thresholdInput, setThresholdInput] = useState(
+    lowStockThreshold.toString()
+  );
+  const [currencyInput, setCurrencyInput] = useState(preferredCurrency);
+
+  // keep locals in sync if context values change externally
+  useEffect(() => {
+    setThresholdInput(lowStockThreshold.toString());
+  }, [lowStockThreshold]);
+
+  useEffect(() => {
+    setCurrencyInput(preferredCurrency);
+  }, [preferredCurrency]);
+
+  // detect closed→open transition to reset inputs
+  const prevOpenRef = useRef(false);
+  useEffect(() => {
+    const wasClosed = !prevOpenRef.current;
+    if (isSettingsOpen && wasClosed) {
+      // dropdown just opened
+      setThresholdInput(lowStockThreshold.toString());
+      setCurrencyInput(preferredCurrency);
+    }
+    prevOpenRef.current = isSettingsOpen;
+  }, [isSettingsOpen, lowStockThreshold, preferredCurrency]);
+
   // Helper to confirm threshold
-  const confirmThresholdChange = (e) => {
+  const confirmThresholdChange = (e, newValue) => {
     e.stopPropagation();
     toast({
       title: "Threshold updated",
-      description: `Low stock threshold is now ${lowStockThreshold}`,
+      description: `Low stock threshold is now ${newValue}`,
       status: "success",
       duration: 2000,
       isClosable: true,
@@ -73,11 +107,11 @@ const Navbar = () => {
   };
 
   // helper to confirm currency change
-  const confirmCurrencyChange = (e) => {
+  const confirmCurrencyChange = (e, newValue) => {
     e.stopPropagation();
     toast({
       title: "Currency updated",
-      description: `Currency label set to "${preferredCurrency}"`,
+      description: `Currency label set to "${newValue}"`,
       status: "success",
       duration: 2000,
       isClosable: true,
@@ -137,7 +171,12 @@ const Navbar = () => {
           </Button>
 
           {/* Gear icon: Inventory Settings */}
-          <Menu closeOnSelect={false}>
+          <Menu
+            closeOnSelect={false}
+            isOpen={isSettingsOpen}
+            onOpen={onSettingsOpen}
+            onClose={onSettingsClose}
+          >
             <MenuButton as={Button}>
               <FaCog />
             </MenuButton>
@@ -164,8 +203,8 @@ const Navbar = () => {
                       <Input
                         placeholder="Threshold"
                         type="number"
-                        value={lowStockThreshold}
-                        onChange={(e) => setLowStockThreshold(e.target.value)}
+                        value={thresholdInput}                             // ← local state
+                        onChange={(e) => setThresholdInput(e.target.value)}// ← local update
                         onClick={(e) => e.stopPropagation()}
                         onFocus={(e) => e.stopPropagation()}
                         width="full"
@@ -176,8 +215,16 @@ const Navbar = () => {
                       <Button
                         onClick={(e) => {
                           e.stopPropagation();
-                          saveLowStockThreshold();
-                          confirmThresholdChange(e);
+                          const parsed = parseInt(thresholdInput, 10);
+                          if (!isNaN(parsed)) {
+                            setLowStockThreshold(parsed);    // update context
+                            saveLowStockThreshold();         // persist
+                            confirmThresholdChange(e, parsed);
+                          } else {
+                            setThresholdInput(
+                              lowStockThreshold.toString()
+                            ); // reset if invalid
+                          }
                         }}
                         size="sm"
                         variant="outline"
@@ -250,8 +297,7 @@ const Navbar = () => {
 
                 {/* 4. Currency Label */}
                 <MenuItem
-                  onClick={(e) => e.stopPropagation()}
-                  _hover={{ bg: "transparent" }}
+                  onClick={(e) => e.stopPropagation()}                  _hover={{ bg: "transparent" }}
                   tabIndex={-1}
                 >
                   <VStack spacing={2} w="full">
@@ -274,10 +320,8 @@ const Navbar = () => {
                     <Flex gap={2} w="full" align="center">
                       <Input
                         placeholder="Enter currency label"
-                        value={preferredCurrency}
-                        onChange={(e) =>
-                          setPreferredCurrency(e.target.value)
-                        }
+                        value={currencyInput}                                        // ← local state
+                        onChange={(e) => setCurrencyInput(e.target.value)}          // ← local update
                         onClick={(e) => e.stopPropagation()}
                         onFocus={(e) => e.stopPropagation()}
                         width="full"
@@ -288,8 +332,9 @@ const Navbar = () => {
                       <Button
                         onClick={(e) => {
                           e.stopPropagation();
-                          savePreferredCurrency();
-                          confirmCurrencyChange(e);
+                          setPreferredCurrency(currencyInput);   // update context
+                          savePreferredCurrency();               // persist
+                          confirmCurrencyChange(e, currencyInput);
                         }}
                         size="sm"
                         variant="outline"

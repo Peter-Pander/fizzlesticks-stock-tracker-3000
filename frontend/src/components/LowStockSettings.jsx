@@ -7,29 +7,44 @@ import {
   IconButton,
 } from "@chakra-ui/react";
 import { CheckIcon } from "@chakra-ui/icons";
-import { useState, useEffect } from "react";
-import { useInventorySettings } from "../context/InventorySettingsContext"; // ✅ updated
+import { useState, useEffect, useRef } from "react";
+import { useInventorySettings } from "../context/InventorySettingsContext";
 
-const LowStockSettings = () => {
+// NOTE: accept `isOpen` so we can reset on dropdown open
+const LowStockSettings = ({ isOpen }) => {
   const {
     lowStockThreshold,
     setLowStockThreshold,
     saveLowStockThreshold,
-  } = useInventorySettings(); // ✅ using context now
+  } = useInventorySettings(); // using context now
 
+  // local copy for the NumberInput
   const [localValue, setLocalValue] = useState(lowStockThreshold);
 
+  // keep in sync if user saved elsewhere or threshold changed externally
   useEffect(() => {
     setLocalValue(lowStockThreshold);
   }, [lowStockThreshold]);
 
+  // track previous open state
+  const prevIsOpenRef = useRef(isOpen);
+
+  // whenever the dropdown opens (transition false → true), reset to saved threshold
+  useEffect(() => {
+    const wasClosed = !prevIsOpenRef.current;
+    if (isOpen && wasClosed) {
+      setLocalValue(lowStockThreshold);
+    }
+    prevIsOpenRef.current = isOpen;
+  }, [isOpen, lowStockThreshold]);
+
   const handleApply = () => {
     const parsed = parseInt(localValue, 10);
     if (!isNaN(parsed)) {
-      setLowStockThreshold(parsed); // ✅ update context
-      saveLowStockThreshold();     // ✅ persist it
+      setLowStockThreshold(parsed); // update context
+      saveLowStockThreshold();      // persist it
     } else {
-      setLocalValue(lowStockThreshold); // reset to current
+      setLocalValue(lowStockThreshold); // reset to current if invalid
     }
   };
 
