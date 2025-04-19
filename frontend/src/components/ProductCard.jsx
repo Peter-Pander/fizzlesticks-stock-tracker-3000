@@ -22,7 +22,7 @@ import {
 import { EditIcon, DeleteIcon } from '@chakra-ui/icons';
 import { FaPlus, FaMinus, FaUndo } from 'react-icons/fa';
 import { useProductStore } from '../store/product';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 // import your inventory settings context
 import { useInventorySettings } from "../context/InventorySettingsContext";
 
@@ -64,6 +64,17 @@ const ProductCard = ({ product }) => {
   const [deleteTimer, setDeleteTimer] = useState(null);
   const [countdownTimer, setCountdownTimer] = useState(null);
   const [countdown, setCountdown] = useState(0);
+
+  // Sync local form state whenever the product prop changes
+  useEffect(() => {
+    setUpdatedProduct(product);
+  }, [product]);
+
+  // Reset form to latest product values, then open edit modal
+  const handleEditOpen = () => {
+    setUpdatedProduct(product);
+    onEditOpen();
+  };
 
   // Called after the timer expires (or on immediate-delete second click).
   const handleDeleteProduct = async (pid) => {
@@ -264,7 +275,7 @@ const ProductCard = ({ product }) => {
           <IconButton
             icon={<EditIcon />}
             colorScheme='blue'
-            onClick={onEditOpen}
+            onClick={handleEditOpen}
             size='sm'
           />
           <IconButton
