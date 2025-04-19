@@ -114,26 +114,44 @@ function ChangeLogPage() {
             month: "long",
           });
 
-          // determine changeText based on action: created, deleted, restocked, or sold
-          const before = log.previousQuantity;
-          const after = log.newQuantity;
+          // determine changeText based on action: created, deleted, restocked, sold, renamed, or new price
           let changeText;
 
-          if (log.action === "created") {
-            changeText = `created (was 0 → now ${after})`;
-          } else if (log.action === "deleted") {
-            changeText = `deleted (was ${before} → now 0)`;
-          } else if (log.action === "restocked") {
-            const added = after - before;
-            changeText = `was ${before}, ${added} restocked → now ${after}`;
+          // Handle name change
+          if (log.action === "renamed") {
+            changeText = `was ${log.oldValue}, renamed → now ${log.newValue}`;
+
+          // Handle price change
+          } else if (log.action === "new price") {
+            changeText = `${log.itemName} was ${log.oldValue} gold, new price → now ${log.newValue} gold`;
+
+          // Handle quantity-related changes: created, deleted, restocked, or sold
           } else {
-            const sold = before - after;
-            changeText = `was ${before}, ${sold} sold → now ${after}`;
+            const before = log.previousQuantity;
+            const after = log.newQuantity;
+
+            if (log.action === "created") {
+              changeText = `created (was 0 → now ${after} gold)`;
+            } else if (log.action === "deleted") {
+              changeText = `deleted (was ${before} gold → now 0 gold)`;
+            } else if (log.action === "restocked") {
+              const added = after - before;
+              changeText = `was ${before} gold, ${added} restocked → now ${after} gold`;
+            } else {
+              const sold = before - after;
+              changeText = `was ${before} gold, ${sold} sold → now ${after} gold`;
+            }
           }
+
+          // For rename/price entries, omit the itemName prefix
+          const displayText =
+            log.action === "renamed" || log.action === "new price"
+              ? changeText
+              : `${log.itemName} ${changeText}`;
 
           return (
             <Box key={log._id}>
-              🕒 {date} – {log.itemName} {changeText}
+              🕒 {date} – {displayText}
             </Box>
           );
         })}

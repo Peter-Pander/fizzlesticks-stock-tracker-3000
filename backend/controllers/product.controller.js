@@ -53,7 +53,7 @@ export const createProduct = async (req, res) => {
     // 3. Create a new Product, storing the Cloudinary URL
     const newProduct = new Product({
       ...productData,
-      imageUrl: result.secure_url, // ✅ store uploaded image URL
+      imageUrl: result.secure_url, // Store uploaded image URL
       user: req.user._id,
     });
 
@@ -66,6 +66,8 @@ export const createProduct = async (req, res) => {
       previousQuantity: 0,
       newQuantity: newProduct.quantity,
       action: 'created',
+      // for creation logs, oldValue/newValue and productId are optional
+      productId: newProduct._id,
     });
 
     res.status(201).json({
@@ -112,13 +114,57 @@ export const updateProduct = async (req, res) => {
       });
     }
 
-    // If the update includes a change in quantity, record the change in the ChangeLog
+    // —— Name change? ——————————————————————————————————————————
+    if (
+      updateData.name !== undefined &&
+      updateData.name !== product.name
+    ) {
+      const oldName = product.name;
+
+      await ChangeLog.create({
+        user: req.user._id,
+        itemName: oldName,
+        previousQuantity: product.quantity,   // dummy to satisfy schema
+        newQuantity: product.quantity,        // dummy to satisfy schema
+        action: 'renamed',
+        oldValue: oldName,
+        newValue: updateData.name,
+        productId: product._id,
+      });
+
+      // apply the name update to the in‑memory product
+      product.name = updateData.name;
+    }
+
+    // —— Price change? —————————————————————————————————————————
+    if (
+      updateData.price !== undefined &&
+      updateData.price !== product.price
+    ) {
+      const oldPrice = product.price;
+
+      await ChangeLog.create({
+        user: req.user._id,
+        itemName: product.name,               // using updated name if renamed above
+        previousQuantity: product.quantity,   // dummy to satisfy schema
+        newQuantity: product.quantity,        // dummy to satisfy schema
+        action: 'new price',
+        oldValue: oldPrice.toString(),
+        newValue: updateData.price.toString(),
+        productId: product._id,
+      });
+
+      // apply the price update to the in‑memory product
+      product.price = updateData.price;
+    }
+
+    // —— Quantity change? ————————————————————————————————————————
     if (
       updateData.quantity !== undefined &&
       updateData.quantity !== product.quantity
     ) {
       const before = product.quantity;
-      const after  = updateData.quantity;
+      const after = updateData.quantity;
       const action = after > before ? 'restocked' : 'sold';
 
       await ChangeLog.create({
@@ -127,10 +173,11 @@ export const updateProduct = async (req, res) => {
         previousQuantity: before,
         newQuantity: after,
         action,
+        productId: product._id,
       });
     }
 
-    // Update product fields
+    // Update any other product fields
     Object.assign(product, updateData);
     const updatedProduct = await product.save();
 
@@ -183,6 +230,7 @@ export const deleteProduct = async (req, res) => {
       previousQuantity: product.quantity,
       newQuantity: 0,
       action: 'deleted',
+      productId: product._id,
     });
 
     await Product.findByIdAndDelete(id);

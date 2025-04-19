@@ -23,11 +23,13 @@ router.get("/", getProducts);
 // Multer parses the file and puts it on req.file, then hands off to createProduct
 router.post(
   "/",
-  upload.single("image"), // ✅ Field name must match FormData.append("image", ...)
+  upload.single("image"), // Field name must match FormData.append("image", ...)
   createProduct
 );
 
+// Use the updated controller logic for updating a product
 router.put("/:id", updateProduct);
+
 router.delete("/:id", deleteProduct);
 
 export default router;
