@@ -19,12 +19,14 @@ import {
   Select,
   useColorModeValue,
   Link as ChakraLink,
+  Tooltip,
+  Box
 } from "@chakra-ui/react";
 import { Link, useNavigate } from "react-router-dom";
 import { PlusSquareIcon, CheckIcon } from "@chakra-ui/icons";
 import { IoMoon } from "react-icons/io5";
 import { LuSun } from "react-icons/lu";
-import { FaCog, FaUser } from "react-icons/fa";
+import { FaCog, FaUser, FaInfoCircle } from "react-icons/fa";
 
 // Import your contexts & the ChangelogDropdown
 import { useInventorySettings } from "../context/InventorySettingsContext";
@@ -253,12 +255,25 @@ const Navbar = () => {
                   tabIndex={-1}
                 >
                   <VStack spacing={2} w="full">
-                    <Text fontSize="md" alignSelf="flex-start">
-                      Currency Label
-                    </Text>
-                    <Flex gap={2} w="full">
+                    <Flex align="center" gap={1} alignSelf="flex-start">
+                      <Text fontSize="md">Currency Label</Text>
+                      <Tooltip
+                        label="You can use symbols (e.g. $), words (e.g. Dollar, Yen), or even emojis."
+                        fontSize="sm"
+                        hasArrow
+                        placement="right"
+                        bg={useColorModeValue("gray.700", "gray.300")}
+                        color={useColorModeValue("white", "black")}
+                      >
+                        <Box cursor="help">
+                          <FaInfoCircle />
+                        </Box>
+                      </Tooltip>
+                    </Flex>
+
+                    <Flex gap={2} w="full" align="center">
                       <Input
-                        placeholder="e.g. $, €, chips"
+                        placeholder="e.g. $, Yen, cheese"
                         value={preferredCurrency}
                         onChange={(e) =>
                           setPreferredCurrency(e.target.value)
