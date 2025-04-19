@@ -346,6 +346,16 @@ const ProductCard = ({ product }) => {
                 />
               </Box>
               <Box>
+                <Text mb={1}>Quantity</Text>
+                <Input
+                  name='quantity'
+                  type='number'
+                  min="0"
+                  value={updatedProduct.quantity}
+                  onChange={handleInputChange}
+                />
+              </Box>
+              <Box>
                 <Text mb={1}>Image</Text>
                 <Input
                   type="file"
@@ -360,19 +370,11 @@ const ProductCard = ({ product }) => {
                   htmlFor={`edit-image-${product._id}`}
                   variant="outline"
                   colorScheme="blue"
+                  w="full"
+                  cursor="pointer"
                 >
-                  {imageFile ? imageFile.name : "Choose Image"}
+                  {imageFile ? imageFile.name : "Choose New Image"}
                 </Button>
-              </Box>
-              <Box>
-                <Text mb={1}>Quantity</Text>
-                <Input
-                  name='quantity'
-                  type='number'
-                  min="0"
-                  value={updatedProduct.quantity}
-                  onChange={handleInputChange}
-                />
               </Box>
             </VStack>
           </ModalBody>
