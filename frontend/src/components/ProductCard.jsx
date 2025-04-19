@@ -152,6 +152,9 @@ const ProductCard = ({ product }) => {
     if (updatedProduct.price !== product.price) {
       changes.push("New price set successfully");
     }
+    if (imageFile) {
+      changes.push("Image changed successfully");
+    }
 
     // build FormData only if a new image was chosen
     let payload = updatedProduct;
