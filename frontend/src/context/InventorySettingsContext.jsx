@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 
 const InventorySettingsContext = createContext();
 
@@ -20,9 +20,9 @@ export const InventorySettingsProvider = ({ children }) => {
   const [preferredCurrency, setPreferredCurrency] = useState(initialCurrency);
 
   // Save preferred currency to localStorage
-  const savePreferredCurrency = () => {
+  useEffect(() => {
     localStorage.setItem("preferredCurrency", preferredCurrency);
-  };
+  }, [preferredCurrency]);
 
   return (
     <InventorySettingsContext.Provider
@@ -38,7 +38,6 @@ export const InventorySettingsProvider = ({ children }) => {
         // new currency settings
         preferredCurrency,
         setPreferredCurrency,
-        savePreferredCurrency,
       }}
     >
       {children}

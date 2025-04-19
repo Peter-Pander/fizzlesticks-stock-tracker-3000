@@ -57,7 +57,6 @@ const Navbar = () => {
     // currency settings
     preferredCurrency,
     setPreferredCurrency,
-    savePreferredCurrency,
   } = useInventorySettings();
 
   // track settings-dropdown open/close
@@ -334,7 +333,6 @@ const Navbar = () => {
                         onClick={(e) => {
                           e.stopPropagation();
                           setPreferredCurrency(currencyInput);   // update context
-                          savePreferredCurrency();               // persist
                           confirmCurrencyChange(e, currencyInput);
                         }}
                         size="sm"
@@ -349,10 +347,7 @@ const Navbar = () => {
                         )}
                         _hover={{
                           bg: useColorModeValue("gray.100", "gray.700"),
-                          borderColor: useColorModeValue(
-                            "gray.400",
-                            "gray.500"
-                          ),
+                          borderColor: useColorModeValue("gray.400", "gray.500")
                         }}
                         _focus={{ boxShadow: "none" }}
                       >
