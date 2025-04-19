@@ -109,7 +109,9 @@ function ChangeLogPage() {
 
   return (
     <Box p="6">
-      <Heading mb="4">Full History</Heading>
+      <Heading mt={8} mb="4"> {/* Added margin-top to prevent overlap */}
+        Full History
+      </Heading>
 
       <VStack spacing="3" align="start" mb="6">
         {logs.map((log) => {
