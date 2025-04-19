@@ -71,8 +71,8 @@ const CreatePage = () => {
           as={"h1"}
           size={"2xl"}
           textAlign={"center"}
-          mt={10} // Add margin-top to avoid overlapping with icons
-          mb={8}
+          mt={20} // Add margin-top to avoid overlapping with icons
+          mb={0}
         >
           Create New Product
         </Heading>
