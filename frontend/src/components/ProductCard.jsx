@@ -162,9 +162,20 @@ const ProductCard = ({ product }) => {
     const amount = parseInt(restockAmount, 10);
     if (!isNaN(amount) && amount > 0) {
       const newQuantity = product.quantity + amount;
-      await updateProduct(product._id, { quantity: newQuantity });
+      const { success, message } = await updateProduct(product._id, {
+        quantity: newQuantity,
+      });
       setRestockAmount(""); // clear after success
       onRestockClose();
+      toast({
+        title: success ? "Success" : "Error",
+        description: success
+          ? `Restocked ${amount} items`
+          : message,
+        status: success ? "success" : "error",
+        duration: 3000,
+        isClosable: true,
+      });
     }
   };
 
@@ -176,9 +187,20 @@ const ProductCard = ({ product }) => {
         alert("Not enough stock to sell that many!");
         return;
       }
-      await updateProduct(product._id, { quantity: newQuantity });
+      const { success, message } = await updateProduct(product._id, {
+        quantity: newQuantity,
+      });
       setSellAmount(""); // clear after success
       onSellClose();
+      toast({
+        title: success ? "Success" : "Error",
+        description: success
+          ? `Sold ${amount} items`
+          : message,
+        status: success ? "success" : "error",
+        duration: 3000,
+        isClosable: true,
+      });
     }
   };
 

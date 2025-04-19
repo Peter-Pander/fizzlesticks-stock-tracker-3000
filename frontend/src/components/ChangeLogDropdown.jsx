@@ -89,10 +89,10 @@ function ChangeLogDropdown() {
                 changeText = `deleted (was ${before} items → now 0 items)`;
               } else if (log.action === "restocked" || after > before) {
                 const added = after - before;
-                changeText = `was ${before} ${preferredCurrency}, ${added} restocked → now ${after} items`;
+                changeText = `was ${before} items, ${added} restocked → now ${after} items`;
               } else {
                 const sold = before - after;
-                changeText = `was ${before} ${preferredCurrency}, ${sold} sold → now ${after} items`;
+                changeText = `was ${before} items, ${sold} sold → now ${after} items`;
               }
             }
 
