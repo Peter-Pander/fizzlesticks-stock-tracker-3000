@@ -273,7 +273,7 @@ const Navbar = () => {
 
                     <Flex gap={2} w="full" align="center">
                       <Input
-                        placeholder="e.g. $, Yen, cheese"
+                        placeholder="Enter currency label"
                         value={preferredCurrency}
                         onChange={(e) =>
                           setPreferredCurrency(e.target.value)
