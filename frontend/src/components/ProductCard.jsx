@@ -127,11 +127,23 @@ const ProductCard = ({ product }) => {
   };
 
   const handleUpdateProduct = async () => {
+    const changes = [];
+    if (updatedProduct.name !== product.name) {
+      changes.push("Product renamed successfully");
+    }
+    if (updatedProduct.price !== product.price) {
+      changes.push("New price set successfully");
+    }
+
     const { success, message } = await updateProduct(product._id, updatedProduct);
     onEditClose();
     toast({
       title: success ? 'Success' : 'Error',
-      description: message,
+      description: success
+        ? changes.length > 0
+          ? changes.join(" · ")
+          : message
+        : message,
       status: success ? 'success' : 'error',
       duration: 3000,
       isClosable: true,
