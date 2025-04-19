@@ -5,6 +5,7 @@ import {
   NumberInputField,
   HStack,
   IconButton,
+  useToast,
 } from "@chakra-ui/react";
 import { CheckIcon } from "@chakra-ui/icons";
 import { useState, useEffect, useRef } from "react";
@@ -12,10 +13,10 @@ import { useInventorySettings } from "../context/InventorySettingsContext";
 
 // NOTE: accept `isOpen` so we can reset on dropdown open
 const LowStockSettings = ({ isOpen }) => {
+  const toast = useToast();
   const {
     lowStockThreshold,
     setLowStockThreshold,
-    saveLowStockThreshold,
   } = useInventorySettings(); // using context now
 
   // local copy for the NumberInput
@@ -42,7 +43,13 @@ const LowStockSettings = ({ isOpen }) => {
     const parsed = parseInt(localValue, 10);
     if (!isNaN(parsed)) {
       setLowStockThreshold(parsed); // update context
-      saveLowStockThreshold();      // persist it
+      toast({
+        title: "Threshold updated",
+        description: `Low stock threshold is now ${parsed}`,
+        status: "success",
+        duration: 2000,
+        isClosable: true,
+      });
     } else {
       setLocalValue(lowStockThreshold); // reset to current if invalid
     }

@@ -52,7 +52,6 @@ const Navbar = () => {
     setSortOrder,
     lowStockThreshold,
     setLowStockThreshold,
-    saveLowStockThreshold,
 
     // currency settings
     preferredCurrency,
@@ -216,7 +215,6 @@ const Navbar = () => {
                           const parsed = parseInt(thresholdInput, 10);
                           if (!isNaN(parsed)) {
                             setLowStockThreshold(parsed);    // update context
-                            saveLowStockThreshold();         // persist
                             confirmThresholdChange(e, parsed);
                           } else {
                             setThresholdInput(
