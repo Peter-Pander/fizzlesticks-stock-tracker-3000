@@ -165,6 +165,12 @@ const ProductCard = ({ product }) => {
       const { success, message } = await updateProduct(product._id, {
         quantity: newQuantity,
       });
+      if (success) {
+        setUpdatedProduct((prev) => ({
+          ...prev,
+          quantity: newQuantity,
+        }));
+      }
       setRestockAmount(""); // clear after success
       onRestockClose();
       toast({
@@ -190,6 +196,12 @@ const ProductCard = ({ product }) => {
       const { success, message } = await updateProduct(product._id, {
         quantity: newQuantity,
       });
+      if (success) {
+        setUpdatedProduct((prev) => ({
+          ...prev,
+          quantity: newQuantity,
+        }));
+      }
       setSellAmount(""); // clear after success
       onSellClose();
       toast({
