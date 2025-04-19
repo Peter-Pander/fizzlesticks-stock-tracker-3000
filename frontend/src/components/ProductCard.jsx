@@ -22,7 +22,7 @@ import {
 import { EditIcon, DeleteIcon } from '@chakra-ui/icons';
 import { FaPlus, FaMinus, FaUndo } from 'react-icons/fa';
 import { useProductStore } from '../store/product';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';          // ← added useRef
 // import your inventory settings context
 import { useInventorySettings } from "../context/InventorySettingsContext";
 
@@ -65,6 +65,10 @@ const ProductCard = ({ product }) => {
   const [countdownTimer, setCountdownTimer] = useState(null);
   const [countdown, setCountdown] = useState(0);
 
+  // **NEW**: hold chosen file & ref to reset
+  const [imageFile, setImageFile] = useState(null);
+  const fileInputRef = useRef();
+
   // Sync local form state whenever the product prop changes
   useEffect(() => {
     setUpdatedProduct(product);
@@ -73,6 +77,9 @@ const ProductCard = ({ product }) => {
   // Reset form to latest product values, then open edit modal
   const handleEditOpen = () => {
     setUpdatedProduct(product);
+    // clear file selection
+    setImageFile(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
     onEditOpen();
   };
 
@@ -146,7 +153,18 @@ const ProductCard = ({ product }) => {
       changes.push("New price set successfully");
     }
 
-    const { success, message } = await updateProduct(product._id, updatedProduct);
+    // build FormData only if a new image was chosen
+    let payload = updatedProduct;
+    if (imageFile) {
+      const formData = new FormData();
+      formData.append("name", updatedProduct.name);
+      formData.append("price", updatedProduct.price);
+      formData.append("quantity", updatedProduct.quantity);
+      formData.append("image", imageFile);
+      payload = formData;
+    }
+
+    const { success, message } = await updateProduct(product._id, payload);
     onEditClose();
     toast({
       title: success ? 'Success' : 'Error',
@@ -258,6 +276,7 @@ const ProductCard = ({ product }) => {
         </Text>
 
         <HStack spacing={2}>
+          {/* restock, sell, edit, delete buttons unchanged */}
           <IconButton
             icon={<FaPlus />}
             aria-label="Restock"
@@ -327,12 +346,23 @@ const ProductCard = ({ product }) => {
                 />
               </Box>
               <Box>
-                <Text mb={1}>Image URL</Text>
+                <Text mb={1}>Image</Text>
                 <Input
-                  name='imageUrl'
-                  value={updatedProduct.imageUrl}
-                  onChange={handleInputChange}
+                  type="file"
+                  accept="image/*"
+                  display="none"
+                  ref={fileInputRef}
+                  onChange={(e) => setImageFile(e.target.files[0])}
+                  id={`edit-image-${product._id}`}
                 />
+                <Button
+                  as="label"
+                  htmlFor={`edit-image-${product._id}`}
+                  variant="outline"
+                  colorScheme="blue"
+                >
+                  {imageFile ? imageFile.name : "Choose Image"}
+                </Button>
               </Box>
               <Box>
                 <Text mb={1}>Quantity</Text>

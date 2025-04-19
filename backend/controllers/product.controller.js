@@ -114,6 +114,18 @@ export const updateProduct = async (req, res) => {
       });
     }
 
+    // —— New image file? ————————————————————————————————————————
+    if (req.file) {
+      // Upload new image
+      const result = await cloudinary.uploader.upload(req.file.path, {
+        folder: 'products',
+      });
+      // Remove temp file
+      fs.unlinkSync(req.file.path);
+      // Override the stored URL
+      product.imageUrl = result.secure_url;
+    }
+
     // —— Name change? ——————————————————————————————————————————
     if (
       updateData.name !== undefined &&

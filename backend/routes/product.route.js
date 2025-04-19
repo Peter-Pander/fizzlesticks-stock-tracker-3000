@@ -27,8 +27,13 @@ router.post(
   createProduct
 );
 
-// Use the updated controller logic for updating a product
-router.put("/:id", updateProduct);
+// Use the updated controller logic for updating a product,
+// now also parsing an image file if one is sent
+router.put(
+  "/:id",
+  upload.single("image"), // here too, so req.file is populated on updates
+  updateProduct
+);
 
 router.delete("/:id", deleteProduct);
 

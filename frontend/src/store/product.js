@@ -1,4 +1,3 @@
-// src/store/product.js
 import { create } from "zustand";
 
 export const useProductStore = create((set) => ({
@@ -102,18 +101,28 @@ export const useProductStore = create((set) => ({
   // ---------------------------
   // UPDATE
   // ---------------------------
-  updateProduct: async (pid, updatedProduct) => {
+  updateProduct: async (pid, updatedData) => {
     const token = localStorage.getItem("token");
 
-    const res = await fetch(`/api/products/${pid}`, {
+    // Prepare fetch options
+    const options = {
       method: "PUT",
       headers: {
-        "Content-Type": "application/json",
         Authorization: token ? `Bearer ${token}` : "",
+        // we’ll conditionally add Content-Type below
       },
-      body: JSON.stringify(updatedProduct),
-    });
+    };
 
+    // If we're passing a FormData (e.g. with an image), let fetch set its own headers
+    if (updatedData instanceof FormData) {
+      options.body = updatedData;
+    } else {
+      // JSON payload: set the header and stringify
+      options.headers["Content-Type"] = "application/json";
+      options.body = JSON.stringify(updatedData);
+    }
+
+    const res = await fetch(`/api/products/${pid}`, options);
     const data = await res.json();
     if (!data.success) return { success: false, message: data.message };
 
