@@ -297,34 +297,42 @@ const ProductCard = ({ product }) => {
           <ModalHeader>Update Product</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <VStack spacing={4}>
-              <Input
-                placeholder='Product Name'
-                name='name'
-                value={updatedProduct.name}
-                onChange={handleInputChange}
-              />
-              <Input
-                placeholder='Price'
-                name='price'
-                type='number'
-                value={updatedProduct.price}
-                onChange={handleInputChange}
-              />
-              <Input
-                placeholder='Image URL'
-                name='imageUrl'
-                value={updatedProduct.imageUrl}
-                onChange={handleInputChange}
-              />
-              <Input
-                placeholder='Quantity'
-                name='quantity'
-                type='number'
-                min="0"
-                value={updatedProduct.quantity}
-                onChange={handleInputChange}
-              />
+            <VStack spacing={4} align="stretch">
+              <Box>
+                <Text mb={1}>Product Name</Text>
+                <Input
+                  name='name'
+                  value={updatedProduct.name}
+                  onChange={handleInputChange}
+                />
+              </Box>
+              <Box>
+                <Text mb={1}>Price</Text>
+                <Input
+                  name='price'
+                  type='number'
+                  value={updatedProduct.price}
+                  onChange={handleInputChange}
+                />
+              </Box>
+              <Box>
+                <Text mb={1}>Image URL</Text>
+                <Input
+                  name='imageUrl'
+                  value={updatedProduct.imageUrl}
+                  onChange={handleInputChange}
+                />
+              </Box>
+              <Box>
+                <Text mb={1}>Quantity</Text>
+                <Input
+                  name='quantity'
+                  type='number'
+                  min="0"
+                  value={updatedProduct.quantity}
+                  onChange={handleInputChange}
+                />
+              </Box>
             </VStack>
           </ModalBody>
           <ModalFooter>
