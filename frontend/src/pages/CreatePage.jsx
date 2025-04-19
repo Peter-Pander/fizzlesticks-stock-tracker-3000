@@ -57,7 +57,7 @@ const CreatePage = () => {
       setNewProduct({ name: "", price: "", quantity: "" });
       setImageFile(null);
 
-      // ✅ Reset file input
+      // Reset file input
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
@@ -67,7 +67,13 @@ const CreatePage = () => {
   return (
     <Container maxW={"container.sm"}>
       <VStack spacing={8}>
-        <Heading as={"h1"} size={"2xl"} textAlign={"center"} mb={8}>
+        <Heading
+          as={"h1"}
+          size={"2xl"}
+          textAlign={"center"}
+          mt={10} // Add margin-top to avoid overlapping with icons
+          mb={8}
+        >
           Create New Product
         </Heading>
         <Box
