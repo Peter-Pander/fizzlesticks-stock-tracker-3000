@@ -13,13 +13,13 @@ export const useProductStore = create((set) => ({
   // CREATE  (multipart upload)
   // ---------------------------
   createProduct: async (formData) => {
-    // Basic validation – now based on FormData, not JSON
+    // Basic validation – image is now OPTIONAL
     if (
       !formData.get("name") ||
       !formData.get("price") ||
-      !formData.get("image")
+      !formData.get("quantity")
     ) {
-      return { success: false, message: "Please fill in all fields." };
+      return { success: false, message: "Name, price, and quantity are required." };
     }
 
     // Retrieve JWT token from localStorage
@@ -35,7 +35,7 @@ export const useProductStore = create((set) => ({
     });
 
     const data = await res.json();
-    if (!res.ok || !data.success) {
+    if (!data.success) {
       return { success: false, message: data.message || "Upload failed." };
     }
 

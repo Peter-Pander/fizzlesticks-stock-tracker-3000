@@ -28,32 +28,38 @@ export const getProducts = async (req, res) => {
 export const createProduct = async (req, res) => {
   const productData = req.body; // Data sent by the client
 
-  // Validate required fields (image comes via req.file now)
+  /*─────────────────────────────────────────────────────────────
+    Validation ‑‑ image is now OPTIONAL
+  ─────────────────────────────────────────────────────────────*/
   if (
     !productData.name ||
     !productData.price ||
-    productData.quantity == null ||
-    !req.file
+    productData.quantity == null
   ) {
     return res.status(400).json({
       success: false,
-      message: 'Please provide name, price, quantity, and an image file',
+      message: 'Please provide name, price, and quantity',
     });
   }
 
   try {
-    // 1. Upload the image file to Cloudinary
-    const result = await cloudinary.uploader.upload(req.file.path, {
-      folder: 'products', // optional folder in your Cloudinary account
-    });
+    let imageUrl; // will remain undefined if no file uploaded
 
-    // 2. Remove temp file from server
-    fs.unlinkSync(req.file.path);
+    // ───────── Image Upload (optional) ─────────
+    if (req.file) {
+      const result = await cloudinary.uploader.upload(req.file.path, {
+        folder: 'products', // optional folder in your Cloudinary account
+      });
+      imageUrl = result.secure_url;
 
-    // 3. Create a new Product, storing the Cloudinary URL
+      // Remove temp file from server
+      fs.unlinkSync(req.file.path);
+    }
+
+    //  Create a new Product, using default placeholder when no image
     const newProduct = new Product({
       ...productData,
-      imageUrl: result.secure_url, // Store uploaded image URL
+      ...(imageUrl && { imageUrl }), // only set if we actually uploaded one
       user: req.user._id,
     });
 
@@ -66,7 +72,6 @@ export const createProduct = async (req, res) => {
       previousQuantity: 0,
       newQuantity: newProduct.quantity,
       action: 'created',
-      // for creation logs, oldValue/newValue and productId are optional
       productId: newProduct._id,
     });
 

@@ -12,9 +12,11 @@ const productSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    // Image is now OPTIONAL; falls back to a placeholder graphic
     imageUrl: {
       type: String,
-      required: true,
+      required: false,                 // ← no longer mandatory
+      default: '/placeholder_crate.png', // ← serves from /public
     },
     quantity: {
       type: Number,

@@ -1,3 +1,4 @@
+// src/components/ProductCard.jsx
 import {
   Box,
   Heading,
@@ -18,11 +19,11 @@ import {
   Input,
   VStack,
   useDisclosure,
-} from '@chakra-ui/react';
-import { EditIcon, DeleteIcon } from '@chakra-ui/icons';
-import { FaPlus, FaMinus, FaUndo } from 'react-icons/fa';
-import { useProductStore } from '../store/product';
-import { useState, useEffect, useRef } from 'react';          // ← added useRef
+} from "@chakra-ui/react";
+import { EditIcon, DeleteIcon } from "@chakra-ui/icons";
+import { FaPlus, FaMinus, FaUndo } from "react-icons/fa";
+import { useProductStore } from "../store/product";
+import { useState, useEffect, useRef } from "react"; // ← added useRef
 // import your inventory settings context
 import { useInventorySettings } from "../context/InventorySettingsContext";
 
@@ -40,24 +41,24 @@ const ProductCard = ({ product }) => {
   const {
     isOpen: isEditOpen,
     onOpen: onEditOpen,
-    onClose: onEditClose
+    onClose: onEditClose,
   } = useDisclosure();
 
   const {
     isOpen: isRestockOpen,
     onOpen: onRestockOpen,
-    onClose: onRestockClose
+    onClose: onRestockClose,
   } = useDisclosure();
 
   const {
     isOpen: isSellOpen,
     onOpen: onSellOpen,
-    onClose: onSellClose
+    onClose: onSellClose,
   } = useDisclosure();
 
   const [updatedProduct, setUpdatedProduct] = useState(product);
   const [restockAmount, setRestockAmount] = useState(""); // starts empty
-  const [sellAmount, setSellAmount] = useState("");       // starts empty
+  const [sellAmount, setSellAmount] = useState(""); // starts empty
 
   // New local states for Undo deletion and countdown
   const [pendingDelete, setPendingDelete] = useState(false);
@@ -93,9 +94,9 @@ const ProductCard = ({ product }) => {
 
     const { success, message } = await deleteProduct(pid);
     toast({
-      title: success ? 'Success' : 'Error',
+      title: success ? "Success" : "Error",
       description: message,
-      status: success ? 'success' : 'error',
+      status: success ? "success" : "error",
       duration: 3000,
       isClosable: true,
     });
@@ -122,7 +123,7 @@ const ProductCard = ({ product }) => {
 
     // update countdown display every second
     const countdownInterval = setInterval(() => {
-      setCountdown(prev => (prev > 1 ? prev - 1 : 0));
+      setCountdown((prev) => (prev > 1 ? prev - 1 : 0));
     }, 1000);
     setCountdownTimer(countdownInterval);
   };
@@ -181,13 +182,13 @@ const ProductCard = ({ product }) => {
     const { success, message } = await updateProduct(product._id, payload);
     onEditClose();
     toast({
-      title: success ? 'Success' : 'Error',
+      title: success ? "Success" : "Error",
       description: success
         ? changes.length > 0
           ? changes.join(" · ")
           : message
         : message,
-      status: success ? 'success' : 'error',
+      status: success ? "success" : "error",
       duration: 3000,
       isClosable: true,
     });
@@ -267,31 +268,32 @@ const ProductCard = ({ product }) => {
 
   return (
     <Box
-      shadow='lg'
-      rounded='lg'
-      overflow='hidden'
-      transition='all 0.3s'
+      shadow="lg"
+      rounded="lg"
+      overflow="hidden"
+      transition="all 0.3s"
       _hover={{ transform: "translateY(-5px)", shadow: "xl" }}
       bg={bg}
     >
+      {/* —— Image now falls back to placeholder if missing ——— */}
       <Image
-        src={product.imageUrl}
+        src={product.imageUrl || "/placeholder_crate.png"}
         alt={product.name}
         h={48}
-        w='full'
-        objectFit='cover'
+        w="full"
+        objectFit="cover"
       />
 
       <Box p={4}>
-        <Heading as='h3' size='md' mb={2}>
+        <Heading as="h3" size="md" mb={2}>
           {product.name}
         </Heading>
 
-        <Text fontWeight='bold' fontSize='xl' color={textColor} mb={2}>
+        <Text fontWeight="bold" fontSize="xl" color={textColor} mb={2}>
           {product.price} {preferredCurrency}
         </Text>
 
-        <Text fontSize='md' color={textColor} mb={4}>
+        <Text fontSize="md" color={textColor} mb={4}>
           In Stock: {product.quantity}
         </Text>
 
@@ -301,27 +303,27 @@ const ProductCard = ({ product }) => {
             icon={<FaPlus />}
             aria-label="Restock"
             onClick={onRestockOpen}
-            colorScheme='green'
-            size='sm'
+            colorScheme="green"
+            size="sm"
           />
           <IconButton
             icon={<FaMinus />}
             aria-label="Record Sold"
             onClick={onSellOpen}
-            colorScheme='orange'
-            size='sm'
+            colorScheme="orange"
+            size="sm"
           />
           <IconButton
             icon={<EditIcon />}
-            colorScheme='blue'
+            colorScheme="blue"
             onClick={handleEditOpen}
-            size='sm'
+            size="sm"
           />
           <IconButton
             icon={<DeleteIcon />}
             onClick={() => onDeleteClick(product._id)}
-            colorScheme='red'
-            size='sm'
+            colorScheme="red"
+            size="sm"
           />
           {pendingDelete && (
             <>
@@ -329,8 +331,8 @@ const ProductCard = ({ product }) => {
                 icon={<FaUndo />}
                 aria-label="Undo Delete"
                 onClick={handleUndoDelete}
-                colorScheme='yellow'
-                size='sm'
+                colorScheme="yellow"
+                size="sm"
               />
               <Text fontSize="sm" color={countdownColor}>
                 Deleting in {countdown}s...
@@ -351,7 +353,7 @@ const ProductCard = ({ product }) => {
               <Box>
                 <Text mb={1}>Product Name</Text>
                 <Input
-                  name='name'
+                  name="name"
                   value={updatedProduct.name}
                   onChange={handleInputChange}
                   placeholder="Enter product name"
@@ -360,8 +362,8 @@ const ProductCard = ({ product }) => {
               <Box>
                 <Text mb={1}>Price</Text>
                 <Input
-                  name='price'
-                  type='number'
+                  name="price"
+                  type="number"
                   value={updatedProduct.price}
                   onChange={handleInputChange}
                   placeholder="Enter price (uses your preferred currency)"
@@ -370,8 +372,8 @@ const ProductCard = ({ product }) => {
               <Box>
                 <Text mb={1}>Quantity</Text>
                 <Input
-                  name='quantity'
-                  type='number'
+                  name="quantity"
+                  type="number"
                   min="0"
                   value={updatedProduct.quantity}
                   onChange={handleInputChange}
@@ -396,16 +398,16 @@ const ProductCard = ({ product }) => {
                   w="full"
                   cursor="pointer"
                 >
-                  {imageFile ? imageFile.name : "Choose New Image"}
+                  {imageFile ? imageFile.name : "Choose New Image (optional)"}
                 </Button>
               </Box>
             </VStack>
           </ModalBody>
           <ModalFooter>
-            <Button colorScheme='blue' mr={3} onClick={handleUpdateProduct}>
+            <Button colorScheme="blue" mr={3} onClick={handleUpdateProduct}>
               Update
             </Button>
-            <Button variant='ghost' onClick={onEditClose}>
+            <Button variant="ghost" onClick={onEditClose}>
               Cancel
             </Button>
           </ModalFooter>
@@ -420,18 +422,18 @@ const ProductCard = ({ product }) => {
           <ModalCloseButton />
           <ModalBody>
             <Input
-              placeholder='Amount to restock'
-              type='number'
+              placeholder="Amount to restock"
+              type="number"
               min="1"
               value={restockAmount}
               onChange={(e) => setRestockAmount(e.target.value)}
             />
           </ModalBody>
           <ModalFooter>
-            <Button colorScheme='green' mr={3} onClick={handleRestock}>
+            <Button colorScheme="green" mr={3} onClick={handleRestock}>
               Restock
             </Button>
-            <Button variant='ghost' onClick={onRestockClose}>
+            <Button variant="ghost" onClick={onRestockClose}>
               Cancel
             </Button>
           </ModalFooter>
@@ -446,18 +448,18 @@ const ProductCard = ({ product }) => {
           <ModalCloseButton />
           <ModalBody>
             <Input
-              placeholder='Amount sold'
-              type='number'
+              placeholder="Amount sold"
+              type="number"
               min="1"
               value={sellAmount}
               onChange={(e) => setSellAmount(e.target.value)}
             />
           </ModalBody>
           <ModalFooter>
-            <Button colorScheme='orange' mr={3} onClick={handleSell}>
+            <Button colorScheme="orange" mr={3} onClick={handleSell}>
               Sold
             </Button>
-            <Button variant='ghost' onClick={onSellClose}>
+            <Button variant="ghost" onClick={onSellClose}>
               Cancel
             </Button>
           </ModalFooter>

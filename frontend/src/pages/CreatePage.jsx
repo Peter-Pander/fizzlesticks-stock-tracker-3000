@@ -1,3 +1,4 @@
+// src/pages/CreatePage.jsx
 import {
   Box,
   Button,
@@ -18,7 +19,7 @@ const CreatePage = () => {
     price: "",
     quantity: "",
   });
-  // State for the selected image file
+  // State for the selected image file (now OPTIONAL)
   const [imageFile, setImageFile] = useState(null);
 
   const fileInputRef = useRef(null); // Ref to reset file input
@@ -30,6 +31,20 @@ const CreatePage = () => {
   const handleAddProduct = async (e) => {
     e.preventDefault();
 
+    /*─────────────────────────────────────────────────────────────
+      Front‑end validation: image is OPTIONAL, but the text fields
+      remain required to avoid empty products.
+    ─────────────────────────────────────────────────────────────*/
+    if (!newProduct.name || !newProduct.price || !newProduct.quantity) {
+      toast({
+        title: "Error",
+        description: "Name, price, and quantity are required.",
+        status: "error",
+        isClosable: true,
+      });
+      return;
+    }
+
     // Build FormData payload
     const formData = new FormData();
     formData.append("name", newProduct.name);
@@ -38,9 +53,7 @@ const CreatePage = () => {
 
     if (imageFile) {
       formData.append("image", imageFile);
-    } else {
-      console.log("⚠️ No image file selected.");
-    }
+    } // ← no else needed (backend supplies placeholder)
 
     // Send FormData to the server (no JSON headers)
     const { success, message } = await createProduct(formData);
@@ -114,7 +127,7 @@ const CreatePage = () => {
               }
             />
 
-            {/* Styled file input */}
+            {/* Styled file input (optional) */}
             <Box textAlign="center" w="full">
               <Input
                 type="file"
@@ -133,7 +146,9 @@ const CreatePage = () => {
                 w="full"
                 cursor="pointer"
               >
-                {imageFile ? imageFile.name : "Choose Image"}
+                {imageFile
+                  ? imageFile.name
+                  : "Choose Image (optional)"} {/* updated label */}
               </Button>
             </Box>
 
