@@ -6,8 +6,25 @@ const InventorySettingsContext = createContext();
 const DEFAULT_THRESHOLD = 5;
 
 export const InventorySettingsProvider = ({ children }) => {
-  const [showLowStockOnly, setShowLowStockOnly] = useState(false);
-  const [sortOrder, setSortOrder] = useState("lowToHigh");
+  // Load initial showLowStockOnly from localStorage or default to false
+  const storedShowOnly = localStorage.getItem("inventory_showLowStockOnly");
+  const initialShowOnly = storedShowOnly === "true";
+
+  const [showLowStockOnly, setShowLowStockOnly] = useState(initialShowOnly);
+
+  // Save showLowStockOnly to localStorage automatically
+  useEffect(() => {
+    localStorage.setItem("inventory_showLowStockOnly", String(showLowStockOnly));
+  }, [showLowStockOnly]);
+
+  // Load initial sortOrder from localStorage or default to "lowToHigh"
+  const initialSortOrder = localStorage.getItem("inventory_sortOrder") || "lowToHigh";
+  const [sortOrder, setSortOrder] = useState(initialSortOrder);
+
+  // Save sortOrder to localStorage automatically
+  useEffect(() => {
+    localStorage.setItem("inventory_sortOrder", sortOrder);
+  }, [sortOrder]);
 
   // Load initial threshold from localStorage or fallback
   const storedThreshold = localStorage.getItem("lowStockThreshold");
