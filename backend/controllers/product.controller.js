@@ -114,6 +114,17 @@ export const updateProduct = async (req, res) => {
       });
     }
 
+    /*─────────────────────────────────────────────────────────────
+      Coerce numeric strings to numbers BEFORE we compare them
+      (prevents "50" vs 50 from being treated as a change).
+    ─────────────────────────────────────────────────────────────*/
+    if (updateData.price !== undefined) {
+      updateData.price = Number(updateData.price);
+    }
+    if (updateData.quantity !== undefined) {
+      updateData.quantity = Number(updateData.quantity);
+    }
+
     // —— New image file? ————————————————————————————————————————
     if (req.file) {
       // Upload new image
@@ -187,6 +198,9 @@ export const updateProduct = async (req, res) => {
         action,
         productId: product._id,
       });
+
+      // apply quantity update
+      product.quantity = after;
     }
 
     // Update any other product fields
