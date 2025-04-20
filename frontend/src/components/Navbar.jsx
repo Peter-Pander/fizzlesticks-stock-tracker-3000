@@ -145,7 +145,7 @@ const Navbar = () => {
           <Link to={"/"}> ✨ Fizzlestick's Stock Tracker 3000 🔮✨ </Link>
         </Text>
 
-        {/* --- Right side icons: create, color mode, settings, changelog, user --- */}
+        {/* --- Right side icons: create, color mode, settings, changelog, about, user --- */}
         <HStack spacing={2} alignItems={"center"}>
           {/* Create new product button */}
           <Button
@@ -404,6 +404,11 @@ const Navbar = () => {
 
           {/* Changelog icon */}
           <ChangeLogDropdown />
+
+          {/* About page link */}
+          <Button as={Link} to="/about" variant="ghost" aria-label="About">
+            <FaInfoCircle />
+          </Button>
 
           {/* NEW: User icon menu */}
           {user ? (

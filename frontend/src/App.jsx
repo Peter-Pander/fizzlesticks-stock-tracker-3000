@@ -4,6 +4,7 @@ import { Box, useColorModeValue } from "@chakra-ui/react";
 import { Route, Routes } from "react-router-dom";
 import CreatePage from "./pages/CreatePage";
 import HomePage from "./pages/HomePage";
+import AboutPage from "./pages/AboutPage";           // ← Added AboutPage import
 import ChangeLogPage from "./pages/ChangeLogPage";
 import Login from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
@@ -39,6 +40,7 @@ function AppContent() {
       <Navbar />
       <Routes>
         <Route path="/" element={<HomePage />} />
+        <Route path="/about" element={<AboutPage />} />
         <Route path="/create" element={<CreatePage />} />
         <Route path="/changelog" element={<ChangeLogPage />} />
         <Route path="/register" element={<Register />} />
