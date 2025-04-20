@@ -46,6 +46,19 @@ export const InventorySettingsProvider = ({ children }) => {
     localStorage.setItem("preferredCurrency", preferredCurrency);
   }, [preferredCurrency]);
 
+  // Reset all settings to their default values and clear from localStorage
+  const resetSettings = () => {
+    setLowStockThreshold(DEFAULT_THRESHOLD);
+    setPreferredCurrency("gold");
+    setSortOrder("lowToHigh");
+    setShowLowStockOnly(false);
+
+    localStorage.removeItem("lowStockThreshold");
+    localStorage.removeItem("preferredCurrency");
+    localStorage.removeItem("inventory_sortOrder");
+    localStorage.removeItem("inventory_showLowStockOnly");
+  };
+
   return (
     <InventorySettingsContext.Provider
       value={{
@@ -59,6 +72,9 @@ export const InventorySettingsProvider = ({ children }) => {
         // currency settings
         preferredCurrency,
         setPreferredCurrency,
+
+        // reset all settings
+        resetSettings,
       }}
     >
       {children}
