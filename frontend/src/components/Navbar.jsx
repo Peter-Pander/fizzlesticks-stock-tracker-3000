@@ -347,23 +347,30 @@ const Navbar = () => {
                 <MenuDivider />
 
                 {/* 5. Reset to Defaults Button */}
-                <MenuItem
-                  onClick={() => {
-                    resetSettings();
-                    toast({
-                      title: "Settings reset",
-                      description: "Inventory settings reset to defaults.",
-                      status: "info",
-                      duration: 3000,
-                      isClosable: true,
-                    });
-                  }}
-                  _hover={{
-                    bg: useColorModeValue("gray.100", "gray.700"),
-                  }}
-                >
-                  Reset to Defaults
-                </MenuItem>
+                <Box px={4} py={2} onClick={(e) => e.stopPropagation()}>
+                  <Button
+                    w="full"
+                    variant="outline"
+                    colorScheme="gray"
+                    onClick={() => {
+                      resetSettings();
+                      toast({
+                        title: "Settings reset",
+                        description: "Inventory settings reset to defaults.",
+                        status: "info",
+                        duration: 3000,
+                        isClosable: true,
+                      });
+                    }}
+                    _hover={{
+                      bg: useColorModeValue("gray.100", "gray.600"),
+                      borderColor: useColorModeValue("gray.400", "gray.500"),
+                    }}
+                    _focus={{ boxShadow: "none" }}
+                  >
+                    Reset to Defaults
+                  </Button>
+                </Box>
               </MenuGroup>
             </MenuList>
           </Menu>
