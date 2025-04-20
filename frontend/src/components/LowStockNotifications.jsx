@@ -17,7 +17,11 @@ import { useInventorySettings } from '../context/InventorySettingsContext';
 const LowStockNotifications = () => {
   // Always call hooks at the top level
   const products = useProductStore((state) => state.products);
-  const { lowStockThreshold } = useInventorySettings();
+  const {
+    lowStockThreshold,
+    showLowStockAlerts,        // respect user toggle
+  } = useInventorySettings();
+
   const [visible, setVisible] = useState(true);
 
   // Color mode hooks – always run these regardless of conditions
@@ -31,8 +35,13 @@ const LowStockNotifications = () => {
   const lowStockItems = getLowStockItems(products, thresholdNumber)
     .sort((a, b) => a.quantity - b.quantity);
 
-  // Now conditionally return null if there are no items or notifications are dismissed
-  if (lowStockItems.length === 0 || !visible) {
+  /* ─────────────────────────────────────────────────────────
+    Hide component if:
+      • user has disabled alerts, OR
+      • there are no low‑stock items, OR
+      • user dismissed this session (visible === false)
+  ───────────────────────────────────────────────────────── */
+  if (!showLowStockAlerts || lowStockItems.length === 0 || !visible) {
     return null;
   }
 
@@ -59,6 +68,7 @@ const LowStockNotifications = () => {
           right="4px"
           onClick={() => setVisible(false)}
         />
+
         <Heading as="h3" size="md" mb={2}>
           Low Stock Notifications
         </Heading>

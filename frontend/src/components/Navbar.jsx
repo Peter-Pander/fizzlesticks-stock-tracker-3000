@@ -48,6 +48,8 @@ const Navbar = () => {
   const {
     showLowStockOnly,
     setShowLowStockOnly,
+    showLowStockAlerts,
+    setShowLowStockAlerts,
     sortOrder,
     setSortOrder,
     lowStockThreshold,
@@ -259,6 +261,16 @@ const Navbar = () => {
                     onChange={(e) => setShowLowStockOnly(e.target.checked)}
                   >
                     Show low stock only
+                  </Checkbox>
+                </Box>
+
+                {/* Show low stock alerts toggle */}
+                <Box px={4} py={2} onClick={(e) => e.stopPropagation()}>
+                  <Checkbox
+                    isChecked={showLowStockAlerts}
+                    onChange={(e) => setShowLowStockAlerts(e.target.checked)}
+                  >
+                    Show alerts
                   </Checkbox>
                 </Box>
 
