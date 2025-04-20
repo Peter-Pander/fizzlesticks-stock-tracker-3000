@@ -233,7 +233,13 @@ const ProductCard = ({ product }) => {
     if (!isNaN(amount) && amount > 0) {
       const newQuantity = product.quantity - amount;
       if (newQuantity < 0) {
-        alert("Not enough stock to sell that many!");
+        toast({
+          title: "Insufficient Stock",
+          description: `You only have ${product.quantity} in stock.`,
+          status: "warning",
+          duration: 3000,
+          isClosable: true,
+        });
         return;
       }
       const { success, message } = await updateProduct(product._id, {
