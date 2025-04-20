@@ -146,6 +146,9 @@ const ProductCard = ({ product }) => {
 
   const handleUpdateProduct = async () => {
     const changes = [];
+    const newQty = updatedProduct.quantity;
+    const oldQty = product.quantity;
+
     if (updatedProduct.name !== product.name) {
       changes.push("Product renamed successfully");
     }
@@ -154,6 +157,14 @@ const ProductCard = ({ product }) => {
     }
     if (imageFile) {
       changes.push("Image changed successfully");
+    }
+    if (newQty !== oldQty) {
+      const diff = newQty - oldQty;
+      if (diff > 0) {
+        changes.push(`Restocked ${diff} items`);
+      } else {
+        changes.push(`Sold ${Math.abs(diff)} items`);
+      }
     }
 
     // build FormData only if a new image was chosen
