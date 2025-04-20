@@ -252,42 +252,28 @@ const Navbar = () => {
                 <MenuDivider />
 
                 {/* 2. Show low stock only */}
-                <MenuItem
-                  onClick={(e) => e.stopPropagation()}
-                  _hover={{ bg: "transparent" }}
-                  tabIndex={-1}
-                >
+                <Box px={4} py={2} onClick={(e) => e.stopPropagation()}>
                   <Checkbox
                     isChecked={showLowStockOnly}
-                    onChange={(e) =>
-                      setShowLowStockOnly(e.target.checked)
-                    }
+                    onChange={(e) => setShowLowStockOnly(e.target.checked)}
                   >
                     Show low stock only
                   </Checkbox>
-                </MenuItem>
+                </Box>
 
                 <MenuDivider />
 
                 {/* 3. Sort Order Dropdown */}
-                <MenuItem
-                  onClick={(e) => e.stopPropagation()}
-                  _hover={{ bg: "transparent" }}
-                  tabIndex={-1}
-                >
+                <Box px={4} py={2} onClick={(e) => e.stopPropagation()}>
                   <Select
                     value={sortOrder}
                     onChange={(e) => setSortOrder(e.target.value)}
                     width="full"
                   >
-                    <option value="lowToHigh">
-                      Sort by Quantity: Low → High
-                    </option>
-                    <option value="highToLow">
-                      Sort by Quantity: High → Low
-                    </option>
+                    <option value="lowToHigh">Sort by Quantity: Low → High</option>
+                    <option value="highToLow">Sort by Quantity: High → Low</option>
                   </Select>
-                </MenuItem>
+                </Box>
 
                 <MenuDivider />
 
