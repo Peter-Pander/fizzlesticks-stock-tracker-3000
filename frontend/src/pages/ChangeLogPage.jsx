@@ -137,7 +137,7 @@ function ChangeLogPage() {
             const after = log.newQuantity;
 
             if (log.action === "created") {
-              changeText = `created (was 0 → now ${after} ${preferredCurrency})`;
+              changeText = `created (was 0 items → now ${after} items)`;
             } else if (log.action === "deleted") {
               changeText = `deleted (was ${before} items → now 0 items)`;
             } else if (log.action === "restocked") {
