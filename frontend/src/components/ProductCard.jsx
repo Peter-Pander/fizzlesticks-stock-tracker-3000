@@ -337,6 +337,7 @@ const ProductCard = ({ product }) => {
                   name='name'
                   value={updatedProduct.name}
                   onChange={handleInputChange}
+                  placeholder="Enter product name"
                 />
               </Box>
               <Box>
@@ -346,6 +347,7 @@ const ProductCard = ({ product }) => {
                   type='number'
                   value={updatedProduct.price}
                   onChange={handleInputChange}
+                  placeholder="Enter price (uses your preferred currency)"
                 />
               </Box>
               <Box>
@@ -356,6 +358,7 @@ const ProductCard = ({ product }) => {
                   min="0"
                   value={updatedProduct.quantity}
                   onChange={handleInputChange}
+                  placeholder="Enter quantity in stock"
                 />
               </Box>
               <Box>
