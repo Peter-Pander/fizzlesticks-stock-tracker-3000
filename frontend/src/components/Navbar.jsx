@@ -406,7 +406,7 @@ const Navbar = () => {
           <ChangeLogDropdown />
 
           {/* About page link */}
-          <Button as={Link} to="/about" variant="ghost" aria-label="About">
+          <Button as={Link} to="/about">
             <FaInfoCircle />
           </Button>
 
