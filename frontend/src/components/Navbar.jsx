@@ -283,8 +283,23 @@ const Navbar = () => {
                     onChange={(e) => setSortOrder(e.target.value)}
                     width="full"
                   >
-                    <option value="lowToHigh">Sort by Quantity: Low → High</option>
-                    <option value="highToLow">Sort by Quantity: High → Low</option>
+                    {/* Quantity */}
+                    <option value="qtyLowHigh">
+                      Sort by Quantity: Low → High
+                    </option>
+                    <option value="qtyHighLow">
+                      Sort by Quantity: High → Low
+                    </option>
+                    {/* Name */}
+                    <option value="nameAZ">Sort by Name: A → Z</option>
+                    <option value="nameZA">Sort by Name: Z → A</option>
+                    {/* Price */}
+                    <option value="priceLowHigh">
+                      Sort by Price: Low → High
+                    </option>
+                    <option value="priceHighLow">
+                      Sort by Price: High → Low
+                    </option>
                   </Select>
                 </Box>
 

@@ -2,8 +2,18 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 
 const InventorySettingsContext = createContext();
 
-// default fallback
+// default fallback values
 const DEFAULT_THRESHOLD = 5;
+
+// recognised sort‑order keys (canonical only)
+const VALID_SORT_ORDERS = [
+  "qtyLowHigh",     // Quantity: Low → High
+  "qtyHighLow",     // Quantity: High → Low
+  "nameAZ",         // Name: A → Z
+  "nameZA",         // Name: Z → A
+  "priceLowHigh",   // Price: Low → High
+  "priceHighLow",   // Price: High → Low
+];
 
 export const InventorySettingsProvider = ({ children }) => {
   // ─────────────── Low‑stock‑only toggle ───────────────
@@ -15,7 +25,7 @@ export const InventorySettingsProvider = ({ children }) => {
     localStorage.setItem("inventory_showLowStockOnly", String(showLowStockOnly));
   }, [showLowStockOnly]);
 
-  // ─────────────── NEW: Low‑stock alerts toggle ───────────────
+  // ─────────────── Low‑stock alerts toggle ───────────────
   const storedAlerts = localStorage.getItem("inventory_showLowStockAlerts");
   // default = true when key not present
   const initialAlerts = storedAlerts !== "false";
@@ -29,12 +39,19 @@ export const InventorySettingsProvider = ({ children }) => {
   }, [showLowStockAlerts]);
 
   // ─────────────── Sort order ───────────────
-  const initialSortOrder =
-    localStorage.getItem("inventory_sortOrder") || "lowToHigh";
+  // if the stored value isn’t valid (or missing) fall back to qtyLowHigh
+  const storedSort = localStorage.getItem("inventory_sortOrder");
+  const initialSortOrder = VALID_SORT_ORDERS.includes(storedSort)
+    ? storedSort
+    : "qtyLowHigh";
+
   const [sortOrder, setSortOrder] = useState(initialSortOrder);
 
   useEffect(() => {
-    localStorage.setItem("inventory_sortOrder", sortOrder);
+    // only persist if the value is valid — avoids junk keys
+    if (VALID_SORT_ORDERS.includes(sortOrder)) {
+      localStorage.setItem("inventory_sortOrder", sortOrder);
+    }
   }, [sortOrder]);
 
   // ─────────────── Low‑stock threshold ───────────────
@@ -59,7 +76,10 @@ export const InventorySettingsProvider = ({ children }) => {
   const resetSettings = () => {
     setLowStockThreshold(DEFAULT_THRESHOLD);
     setPreferredCurrency("gold");
-    setSortOrder("lowToHigh");
+
+    // reset to canonical default (Quantity: Low → High)
+    setSortOrder("qtyLowHigh");
+
     setShowLowStockOnly(false);
     setShowLowStockAlerts(true); // default ON
 
@@ -76,7 +96,7 @@ export const InventorySettingsProvider = ({ children }) => {
         showLowStockOnly,
         setShowLowStockOnly,
 
-        // NEW: alerts toggle
+        // alerts toggle
         showLowStockAlerts,
         setShowLowStockAlerts,
 
