@@ -62,15 +62,19 @@ const LowStockNotifications = () => {
         <Heading as="h3" size="md" mb={2}>
           Low Stock Notifications
         </Heading>
-        <List spacing={2}>
-          {lowStockItems.map((item) => (
-            <ListItem key={item._id || item.id}>
-              <Text>
-                {item.name} is low on stock: Only {item.quantity} left.
-              </Text>
-            </ListItem>
-          ))}
-        </List>
+
+        {/* Scrollable notification list */}
+        <Box maxHeight="185px" overflowY="auto" pr={2}>
+          <List spacing={2}>
+            {lowStockItems.map((item) => (
+              <ListItem key={item._id || item.id}>
+                <Text>
+                  {item.name} is low on stock: Only {item.quantity} left.
+                </Text>
+              </ListItem>
+            ))}
+          </List>
+        </Box>
       </Box>
     </Container>
   );
