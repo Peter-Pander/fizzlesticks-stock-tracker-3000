@@ -13,7 +13,7 @@ const AboutPage = () => (
   <Container maxW="container.md" py={10}>
     <VStack spacing={10} align="start">
       {/* Title */}
-      <Box>
+      <Box mt={5}>
         <Heading as="h1" size="2xl" mb={2}>
           🧙‍♂️ About Fizzlestick’s Stock Tracker 3000
         </Heading>
