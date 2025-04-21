@@ -129,7 +129,7 @@ function ChangeLogPage() {
 
           // Handle price change
           } else if (log.action === "new price") {
-            changeText = `was ${log.oldValue} ${preferredCurrency}, new price → now ${log.newValue} ${preferredCurrency}`;
+            changeText = `${log.itemName} was ${log.oldValue} ${preferredCurrency}, new price → now ${log.newValue} ${preferredCurrency}`;
 
           // Handle quantity-related changes: created, deleted, restocked, or sold
           } else {
