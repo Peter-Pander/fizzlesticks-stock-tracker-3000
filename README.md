@@ -1,6 +1,6 @@
 # ✨ Fizzlestick's Stock Tracker 3000 🔮✨
 
-Fizzlestick's Stock Tracker 3000 is a modern inventory management application built on a MERN stack foundation. It provides small business owners, shop managers, and product-based teams with an intuitive interface to manage stock, track low inventory, and update product details quickly. The app includes user accounts, image uploads, real-time feedback, and customizable inventory settings for a seamless experience across desktop and mobile.
+Fizzlestick's Stock Tracker 3000 is an inventory management application built on a MERN stack foundation. It provides small business owners, shop managers, and product-based teams with an intuitive interface to manage stock, track low inventory, and update product details quickly. The app includes user accounts, image uploads, real-time feedback, and customizable inventory settings for a seamless experience across desktop and mobile.
 
 
 ## 🚀 Getting Started
@@ -61,12 +61,12 @@ Fizzlestick's Stock Tracker 3000 is a modern inventory management application bu
 ### 📦 Product Management
 - Create new products with a name, price, quantity, and optional image
 - Upload custom images for flair
-- Edit product details using styled modals
-- Quick Sell and Restock buttons to update stock instantly
+- Edit product details using modals
+- Sold and Restock buttons to update stock instantly
 - Delete items no longer for sale
 
 ### 📉 Low Stock Warnings
-- Products below your set threshold are marked with a warning icon
+- A yellow notification banner listing products that are low on stock
 - Customize the threshold in Inventory Settings
 - Option to show only low stock items
 
