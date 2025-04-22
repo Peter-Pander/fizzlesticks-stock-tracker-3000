@@ -11,14 +11,15 @@ export const AuthProvider = ({ children }) => {
     if (token) {
       // Set axios to include token on all requests
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      // Optionally, fetch user info using /api/auth/me
-      axios.get('/api/auth/me')
+      // Optionally, fetch user info using /api/me
+      axios.get('/api/me')
         .then(response => setUser(response.data.user))
         .catch(error => {
           console.error('Failed to fetch user', error);
           setUser(null);
           setToken(null);
           localStorage.removeItem('token');
+          delete axios.defaults.headers.common['Authorization'];
         });
     }
   }, [token]);
