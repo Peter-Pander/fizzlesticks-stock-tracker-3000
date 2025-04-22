@@ -33,32 +33,32 @@ async function seed() {
     {
       name: "Everburn Candle",
       price: 30, quantity: 4,
-      picture: "https://res.cloudinary.com/dadymzua9/image/upload/6.Everburn_Candle_jmwdhf"
+      imageUrl: "https://res.cloudinary.com/dadymzua9/image/upload/6.Everburn_Candle_jmwdhf"
     },
     {
       name: "Boots of Sneaking",
       price: 80, quantity: 80,
-      picture: "https://res.cloudinary.com/dadymzua9/image/upload/5.Boots_of_Sneaking_ewepzx"
+      imageUrl: "https://res.cloudinary.com/dadymzua9/image/upload/5.Boots_of_Sneaking_ewepzx"
     },
     {
       name: "Crystal of Teleportation",
       price: 55, quantity: 15,
-      picture: "https://res.cloudinary.com/dadymzua9/image/upload/3.Crystal_of_Teleportation_sjcp6o"
+      imageUrl: "https://res.cloudinary.com/dadymzua9/image/upload/3.Crystal_of_Teleportation_sjcp6o"
     },
     {
       name: "Boom-Buddy",
       price: 10, quantity: 50,
-      picture: "https://res.cloudinary.com/dadymzua9/image/upload/4.Boom-Buddy_qu1ss3"
+      imageUrl: "https://res.cloudinary.com/dadymzua9/image/upload/4.Boom-Buddy_qu1ss3"
     },
     {
       name: "Healing Potion",
       price: 15, quantity: 140,
-      picture: "https://res.cloudinary.com/dadymzua9/image/upload/1.healing-potion_junfvj"
+      imageUrl: "https://res.cloudinary.com/dadymzua9/image/upload/1.healing-potion_junfvj"
     },
     {
       name: "Mana Potion",
       price: 15, quantity: 200,
-      picture: "https://res.cloudinary.com/dadymzua9/image/upload/2.mana-potion_jw4k4y"
+      imageUrl: "https://res.cloudinary.com/dadymzua9/image/upload/2.mana-potion_jw4k4y"
     }
   ];
 
