@@ -43,6 +43,30 @@ const Login = () => {
     }
   };
 
+  // New: handler for demo login
+  const loginAsDemoUser = async () => {
+    try {
+      const res = await axios.post("/api/demo-login");
+      setUser({ email: res.data.email });
+      setToken(res.data.token);
+      localStorage.setItem("token", res.data.token);
+      toast({
+        title: "Logged in as Demo User",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+      navigate("/");
+    } catch {
+      toast({
+        title: "Demo login failed",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
+
   // adapt card & input bg to light/dark
   const formBg = useColorModeValue("white", "gray.800");
   const inputBg = useColorModeValue("gray.50", "gray.700");
@@ -94,6 +118,16 @@ const Login = () => {
             width="full"
           >
             Log in
+          </Button>
+
+          {/* Demo login button */}
+          <Button
+            mt={4}
+            variant="outline"
+            width="full"
+            onClick={loginAsDemoUser}
+          >
+            Login as Demo User
           </Button>
 
           <Text fontSize="sm" textAlign="center">
