@@ -8,6 +8,8 @@ const router = express.Router();
 router.post('/register', authController.register);
 // Login route
 router.post('/login', authController.login);
+// Demo login route
+router.post('/demo-login', authController.demoLogin);
 // Optional: Get current user info
 router.get('/me', requireAuth, authController.getMe);
 
