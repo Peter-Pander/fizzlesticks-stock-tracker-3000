@@ -81,7 +81,7 @@ const demoLogin = async (req, res) => {
       name: p.name,
       price: p.price,
       quantity: p.quantity,
-      picture: p.picture,
+      imageUrl: p.imageUrl,
       user: tempUser._id
     }));
     await Product.insertMany(copiedProducts);
