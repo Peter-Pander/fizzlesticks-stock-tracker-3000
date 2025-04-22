@@ -12,44 +12,53 @@ async function seed() {
   await mongoose.connect(process.env.MONGO_URI);
 
   // —– remove any old Bob + their products —–
-  await Product.deleteMany({});    // or just { userEmail:"bob@example.com" }
-  await User.deleteOne({ email: "bob@example.com" });
+  // find Bob if he exists
+  let bob = await User.findOne({ email: "bob@example.com" });
+  if (bob) {
+    // delete only Bob’s products
+    await Product.deleteMany({ user: bob._id });
+    // delete Bob so we can recreate fresh below
+    await User.deleteOne({ _id: bob._id });
+  } else {
+    // ensure no stray Bob entry
+    await User.deleteOne({ email: "bob@example.com" });
+  }
 
   // —– create Bob —–
   const bobPw = await bcrypt.hash("secret", 10);
-  const bob = await User.create({ email: "bob@example.com", password: bobPw });
+  bob = await User.create({ email: "bob@example.com", password: bobPw });
 
   // —– Bob’s six fantasy products —–
   const defaultProducts = [
     {
       name: "Everburn Candle",
       price: 30, quantity: 4,
-      picture: "https://res.cloudinary.com/dadymzua9/image/upload/v1/6.Everburn_Candle_jmwdhf"
+      picture: "https://res.cloudinary.com/dadymzua9/image/upload/6.Everburn_Candle_jmwdhf"
     },
     {
       name: "Boots of Sneaking",
       price: 80, quantity: 80,
-      picture: "https://res.cloudinary.com/dadymzua9/image/upload/v1/5.Boots_of_Sneaking_ewepzx"
+      picture: "https://res.cloudinary.com/dadymzua9/image/upload/5.Boots_of_Sneaking_ewepzx"
     },
     {
       name: "Crystal of Teleportation",
       price: 55, quantity: 15,
-      picture: "https://res.cloudinary.com/dadymzua9/image/upload/v1/3.Crystal_of_Teleportation_sjcp6o"
+      picture: "https://res.cloudinary.com/dadymzua9/image/upload/3.Crystal_of_Teleportation_sjcp6o"
     },
     {
       name: "Boom-Buddy",
       price: 10, quantity: 50,
-      picture: "https://res.cloudinary.com/dadymzua9/image/upload/v1/4.Boom-Buddy_qu1ss3"
+      picture: "https://res.cloudinary.com/dadymzua9/image/upload/4.Boom-Buddy_qu1ss3"
     },
     {
       name: "Healing Potion",
       price: 15, quantity: 140,
-      picture: "https://res.cloudinary.com/dadymzua9/image/upload/v1/1.healing-potion_junfvj"
+      picture: "https://res.cloudinary.com/dadymzua9/image/upload/1.healing-potion_junfvj"
     },
     {
       name: "Mana Potion",
       price: 15, quantity: 200,
-      picture: "https://res.cloudinary.com/dadymzua9/image/upload/v1/2.mana-potion_jw4k4y"
+      picture: "https://res.cloudinary.com/dadymzua9/image/upload/2.mana-potion_jw4k4y"
     }
   ];
 
