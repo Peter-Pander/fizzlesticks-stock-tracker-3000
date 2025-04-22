@@ -22,7 +22,7 @@ app.use(express.json()); // Allows us to accept JSON data in the req.body
 // Mount routes
 app.use("/api/products", productRoutes);
 app.use("/api/logs", changelogRoutes);
-app.use("/api/auth", authRoutes); // Mount the authentication routes
+app.use("/api", authRoutes); // Mount the authentication routes
 
 // Serve static frontend in production
 if (process.env.NODE_ENV === "production") {
