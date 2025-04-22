@@ -26,7 +26,8 @@ const Login = () => {
   const submitHandler = async (e) => {
     e.preventDefault();
     try {
-      const { data } = await axios.post("/api/auth/login", { email, password });
+      // NOTE: endpoint changed from "/api/auth/login" → "/api/login"
+      const { data } = await axios.post("/api/login", { email, password });
       setUser(data.user);
       setToken(data.token);
       localStorage.setItem("token", data.token);
@@ -35,6 +36,30 @@ const Login = () => {
       toast({
         title: "Login failed",
         description: error.response?.data?.message || "Invalid credentials.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
+
+  // New: handler for demo login
+  const loginAsDemoUser = async () => {
+    try {
+      const res = await axios.post("/api/demo-login");
+      setUser({ email: res.data.email });
+      setToken(res.data.token);
+      localStorage.setItem("token", res.data.token);
+      toast({
+        title: "Logged in as Demo User",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+      navigate("/");
+    } catch {
+      toast({
+        title: "Demo login failed",
         status: "error",
         duration: 3000,
         isClosable: true,
@@ -93,6 +118,16 @@ const Login = () => {
             width="full"
           >
             Log in
+          </Button>
+
+          {/* Demo login button */}
+          <Button
+            mt={4}
+            variant="outline"
+            width="full"
+            onClick={loginAsDemoUser}
+          >
+            Login as Demo User
           </Button>
 
           <Text fontSize="sm" textAlign="center">

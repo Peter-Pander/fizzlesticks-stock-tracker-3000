@@ -1,5 +1,8 @@
 import User from '../models/user.model.js';
 import jwt from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
+import Product from '../models/product.model.js';
+import { v4 as uuidv4 } from 'uuid';
 
 const register = async (req, res) => {
   try {
@@ -58,4 +61,43 @@ const getMe = async (req, res) => {
   }
 };
 
-export { register, login, getMe };
+// Login as Demo User (clones Bob)
+const demoLogin = async (req, res) => {
+  try {
+    // Find original Bob user
+    const original = await User.findOne({ email: "bob@example.com" });
+    if (!original) {
+      return res.status(404).json({ message: "Demo user not found" });
+    }
+
+    // Create a new temp user
+    const tempEmail = `demo-${uuidv4()}@example.com`;
+    const hashedPassword = await bcrypt.hash("secret", 10);
+    const tempUser = await User.create({ email: tempEmail, password: hashedPassword });
+
+    // Copy Bob's products to this user
+    const bobsProducts = await Product.find({ user: original._id });
+    const copiedProducts = bobsProducts.map((p) => ({
+      name: p.name,
+      price: p.price,
+      quantity: p.quantity,
+      imageUrl: p.imageUrl,
+      user: tempUser._id
+    }));
+    await Product.insertMany(copiedProducts);
+
+    // Create JWT token for the temp user
+    const token = jwt.sign(
+      { id: tempUser._id, email: tempUser.email },
+      process.env.JWT_SECRET || 'defaultsecret',
+      { expiresIn: '1h' }
+    );
+
+    res.status(200).json({ token, email: tempUser.email });
+  } catch (error) {
+    console.error("Demo login error:", error);
+    res.status(500).json({ message: "Demo login failed" });
+  }
+};
+
+export { register, login, getMe, demoLogin };
